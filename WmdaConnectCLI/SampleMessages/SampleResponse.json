@@ -1,0 +1,108 @@
+{
+  "recipient": "9999",
+  "correlationGuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "payload": {
+    "patient": {
+      "id": "string"
+    },
+    "donor": {
+      "scd": {
+        "grid": "1234567890123456789"
+      },
+      "adcu": {
+        "id": "string"
+      },
+      "cbu": {
+        "id": "string"
+      }
+    },
+    "hlaNomVer": "string",
+    "hla": {
+      "a": {
+        "dna": {
+          "field1": "string",
+          "field2": "string"
+        }
+      },
+      "b": {
+        "dna": {
+          "field1": "string",
+          "field2": "string"
+        }
+      },
+      "c": {
+        "dna": {
+          "field1": "string",
+          "field2": "string"
+        }
+      },
+      "drb1": {
+        "dna": {
+          "field1": "string",
+          "field2": "string"
+        }
+      },
+      "dqb1": {
+        "dna": {
+          "field1": "string",
+          "field2": "string"
+        }
+      },
+      "dpb1": {
+        "dna": {
+          "field1": "string",
+          "field2": "string"
+        }
+      },
+      "drb3": {
+        "dna": {
+          "field1": "string",
+          "field2": "string"
+        }
+      },
+      "drb4": {
+        "dna": {
+          "field1": "string",
+          "field2": "string"
+        }
+      },
+      "drb5": {
+        "dna": {
+          "field1": "string",
+          "field2": "string"
+        }
+      },
+      "dpa1": {
+        "dna": {
+          "field1": "string",
+          "field2": "string"
+        }
+      },
+      "dqa1": {
+        "dna": {
+          "field1": "string",
+          "field2": "string"
+        }
+      }
+    },
+    "mlcGvh": "string",
+    "mlcHvg": "string",
+    "gvhReac": "string",
+    "hvgReac": "string",
+    "abo": "string",
+    "cmv": "string",
+    "cmvDate": "2021-07-28T14:12:25.185Z",
+    "toxo": "string",
+    "ebv": "string",
+    "hiv": "string",
+    "hivP24": "string",
+    "hbsAg": "string",
+    "antiHbs": "string",
+    "antiHbc": "string",
+    "antiHcv": "string",
+    "tpha": "string",
+    "alt": "string",
+    "antiHtlv": "string",
+    "donAccpt": "string"
+  }
+}

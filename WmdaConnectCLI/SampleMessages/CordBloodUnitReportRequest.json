@@ -1,0 +1,33 @@
+{
+  "payload": {
+    "patient": {
+      "id": "string"
+    },
+    "cbu": {
+      "id": "12345678901234567"
+    },
+    "donor": {
+      "scd": {
+        "grid": "1234567890123456789"
+      },
+      "adcu": {
+        "id": "string"
+      },
+      "cordBloodUnitId": {
+        "id": "12345678901234567"
+      }
+    },
+    "requestDate": "2021-10-05T10:08:17.569Z",
+    "PreferredSendingMethod": "1",
+    "referenceCode": "string",
+    "expirationDate": "2021-10-05T10:08:17.569Z",
+    "acknowledgementId": "string",
+    "remark": "string",
+    "faxNumber": "1234567890",
+    "emailAddress": "test@test.test",
+    "cordBloodUnit": "123"
+  },
+  "recipient": "0008",
+  "correlationGuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "messageType": "CordBloodUnitReportRequest"
+}

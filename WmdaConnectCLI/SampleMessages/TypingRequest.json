@@ -1,0 +1,28 @@
+{
+  "recipient": "0008", 
+  "correlationGuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "payload": {
+    "patient": {
+      "id": "string" //Remove this field to prove ID Required
+    },
+    "donor": {
+      "scd": {
+        "grid": "1234567890123456789" //This is set to length 19; just remove 1 character to fail
+      },
+      "adcu": {
+        "id": "string"
+      },
+      "cbu": {
+        "id": "string"
+      }
+    },
+    "requestDate": "2001-01-02", // 01-01-2001
+    "refCode": "string",
+    "resolutionRequired": "12345678901", //Max length 11 ; remove 1 character to fail
+    "institutionPaying": "1234567890", //Max length 10; remove 1 character to fail
+    "urgent": true,
+    "acknowledgementId": "string",
+    "remark": "string",
+    "SHOULD NOT APPEAR": "SHOULDNT APPEAR"
+  }
+}

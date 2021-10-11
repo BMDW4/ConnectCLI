@@ -1,0 +1,27 @@
+{
+  "recipient": "9999",
+  "correlationGuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "payload": {
+    "patient": {
+      "id": "string"
+    },
+    "donor": {
+      "scd": {
+        "grid": "1234567890123456789"
+      },
+      "adcu": {
+        "id": "string"
+      },
+      "cbu": {
+        "id": "string",
+        "sampleType": "string"
+      }
+    },
+    "refCode": "string",
+    "arrvDate": "2021-07-28T14:12:19.362Z",
+    "collDate": "2021-07-28T14:12:19.362Z",
+    "ackId": "string",
+    "labelId": "string",
+    "remark": "string"
+  }
+}

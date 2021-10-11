@@ -1,0 +1,25 @@
+{
+  "recipient": "0008",
+  "correlationGuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "payload": {
+    "patient": {
+      "id": "string123"
+    },
+    "donor": {
+      "scd": {
+        "grid": "1234567890123456789"
+      },
+      "adcu": {
+        "id": "string"
+      },
+      "cbu": {
+        "id": "string",
+        "sampleType": "string"
+      }
+    },
+    "acknowledgementId": "12345678901234567",
+    "informationType": "str", 
+    "remark": "string", 
+    "referenceCode": "string"
+  }
+}

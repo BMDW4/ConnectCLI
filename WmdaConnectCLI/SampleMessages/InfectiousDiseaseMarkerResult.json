@@ -1,0 +1,62 @@
+{
+  "payload": {
+    "patient": {
+      "id": "string"
+    },
+    "donor": {
+      "scd": {
+        "grid": "1234567890123456789"
+      },
+      "adcu": {
+        "id": "string"
+      },
+      "cbu": {
+        "id": "string"
+      }
+    },
+    "requestDate": "2021-10-05T10:08:17.569Z",
+    "referenceCode": "string",
+    "expirationDate": "2021-10-05T10:08:17.569Z",
+    "acknowledgementId": "string",
+    "remark": "string",
+    "sampleExtractionDate": "2021-10-05T10:08:17.569Z",
+    "donorBloodGroup": "ab",
+    "donorRhesus": "1",
+    "donorCcr5Status": "12",
+    "donorWeight": "123",
+    "donorHeight": "123",
+    "numberOfTransfusions": "1",
+    "numberOfPregnancies": "1",
+    "marker": "1234567890123456789",
+    "idm": {
+      "antiCmv": "1",
+      "antiCmvDate": "2021-10-05T10:28:12.535Z",
+      "cmvNat": "1",
+      "cmvNatDate": "2021-10-05T10:28:12.535Z",
+      "hbsAg": "1",
+      "antiHbc": "1",
+      "antiHbs": "1",
+      "hbvNat": "1",
+      "antiHcv": "1",
+      "hcvNat": "1",
+      "antiHev": "1",
+      "hevNat": "1",
+      "antiHiv12": "1",
+      "hiv1Nat": "1",
+      "hivP24": "1",
+      "antiHTLV": "1",
+      "syphilis": "1",
+      "wnvNat": "1",
+      "antiChagas": "1",
+      "chagasNat": "1",
+      "ebv": "1",
+      "toxo": "1",
+      "pb19Nat": "1",
+      "alt": "123"
+    },
+    "institutionPaying": "123"
+  },
+  "recipient": "0008",
+  "correlationGuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "messageType": "InfectiousDiseaseMarkerResult"
+}

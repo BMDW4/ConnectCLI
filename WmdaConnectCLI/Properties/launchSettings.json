@@ -1,0 +1,24 @@
+{
+  "profiles": {
+    "WmdaConnectCLI local ping": {
+      "commandName": "Project",
+      "commandLineArgs": "connect --clientId 7e2df958-a01b-43db-aa66-41c4aa17bd3a --ClientSecret 71a4b8be-8d59-45ad-a9d8-05953f9770be --env stn9 --show"
+    },
+    "WmdaConnectCLI osc ping": {
+      "commandName": "Project",
+      "commandLineArgs": "listen --clientId 9ad178e5-cdca-40dc-8eee-cff7e7758f79 --ClientSecret aa440ca9-00df-445e-88c2-d16d984e628a --env stn7"
+    },
+    "WmdaConnectCLI stn new reg": {
+      "commandName": "Project",
+      "commandLineArgs": "newregistry --clientId 5ee798da-c967-428d-b6b6-0ca1d35320ce --clientSecret b_~5rqhtXFij56-r5LD240m.f~YbsvmndN --env stn --name 2345"
+    },
+    "WmdaConnectCLI 680b new reg": {
+      "commandName": "Project",
+      "commandLineArgs": "newregistry --clientId 0da971af-e846-4680-b447-f2e81db6a7b1 --clientSecret XXXXXXX --name 2345 --env 680b"
+    },
+    "WmdaConnectCLI osc": {
+      "commandName": "Project",
+      "commandLineArgs": "message --help"
+    }
+  }
+}

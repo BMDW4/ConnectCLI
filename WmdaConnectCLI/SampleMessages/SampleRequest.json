@@ -1,0 +1,49 @@
+{
+  "recipient": "9999",
+  "correlationGuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "payload": {
+    "patient": {
+      "id": "string" 
+    },
+    "donor": {
+      "scd": {
+        "grid": "1234567890123456789"
+      },
+      "adcu": {
+        "id": "string"
+      },
+      "cbu": {
+        "id": "string"
+      }
+    },
+    "reqDateUtc": "2021-07-28T14:12:09.343Z",
+    "prod1": {
+      "product": "string",
+      "quantity": 0,
+      "numberOfTubes": 0
+    },
+    "prod2": {
+      "product": "string",
+      "quantity": 0,
+      "numberOfTubes": 0
+    },
+    "prod3": {
+      "product": "string",
+      "quantity": 0,
+      "numberOfTubes": 0
+    },
+    "prod4": {
+      "product": "string",
+      "quantity": 0,
+      "numberOfTubes": 0
+    },
+    "recDate1": "2021-07-28T14:12:09.343Z",
+    "recDate2": "2021-07-28T14:12:09.343Z",
+    "accDays": "string",
+    "instSmpSent": "string",
+    "instPay": "string",
+    "urgent": true,
+    "ackId": "string",
+    "remark": "string"
+  }
+}
