@@ -13,6 +13,21 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WmdaConnect.Models", "WmdaC
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WmdaConnect.Shared", "WmdaConnectShared\WmdaConnect.Shared\WmdaConnect.Shared.csproj", "{09F709D0-5725-44CD-AC99-9F0270D9E05C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CICD", "CICD", "{E3C46615-9BAF-4662-9D4A-E55EE470B4A9}"
+	ProjectSection(SolutionItems) = preProject
+		CICD\azure-pipelines-cli.yml = CICD\azure-pipelines-cli.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "templates", "templates", "{912508DA-F7BA-447B-BC4A-2160C5DDE478}"
+	ProjectSection(SolutionItems) = preProject
+		CICD\templates\build.yml = CICD\templates\build.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{06DDE296-06F2-4B40-B1D8-169107678C2A}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,6 +55,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{8967C77D-6F80-427F-B555-A4263ACB0E94} = {384A8879-51E1-4911-9DCD-DB9A97DE6E1C}
 		{09F709D0-5725-44CD-AC99-9F0270D9E05C} = {384A8879-51E1-4911-9DCD-DB9A97DE6E1C}
+		{912508DA-F7BA-447B-BC4A-2160C5DDE478} = {E3C46615-9BAF-4662-9D4A-E55EE470B4A9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {613E4555-DE7F-4868-8BE5-E2FFDE0AF87B}
