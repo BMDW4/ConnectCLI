@@ -1,0 +1,24 @@
+name: $(Date:yyyyMMdd)$(Rev:.r)
+
+trigger:
+  branches:
+    include:
+    - '*'
+
+#variables:
+#  - template: templates/variables.yml
+
+pool:
+  vmImage: $(vmImageName)
+
+stages:
+ - stage: Build
+   dependsOn: []
+   displayName: 'Build'
+   jobs:
+   - job: Build
+     continueOnError: false
+     steps:
+       - template: templates/build.yml
+     
+
