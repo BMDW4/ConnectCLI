@@ -1,0 +1,3 @@
+[submodule "WmdaConnectShared"]
+	path = WmdaConnectShared
+	url = https://github.com/oscoreio/WmdaConnectShared
