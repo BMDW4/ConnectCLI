@@ -14,12 +14,16 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7DEE754F-C625-4837-8EC3-47D6D4D839EF}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
-		azure-pipelines-cli.yml = azure-pipelines-cli.yml
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "templates", "templates", "{44DFD287-7372-491B-9619-3B9ACC8EC682}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CICD", "CICD", "{6DB7AA57-005C-4C99-A32D-A736B8BD73F8}"
 	ProjectSection(SolutionItems) = preProject
-		templates\build.yml = templates\build.yml
+		CICD\azure-pipelines-cli.yml = CICD\azure-pipelines-cli.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "templates", "templates", "{82B3FF95-BFD9-45EA-9A92-AE9CDFB780BE}"
+	ProjectSection(SolutionItems) = preProject
+		CICD\templates\build.yml = CICD\templates\build.yml
 	EndProjectSection
 EndProject
 Global
@@ -45,6 +49,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{82B3FF95-BFD9-45EA-9A92-AE9CDFB780BE} = {6DB7AA57-005C-4C99-A32D-A736B8BD73F8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {613E4555-DE7F-4868-8BE5-E2FFDE0AF87B}
