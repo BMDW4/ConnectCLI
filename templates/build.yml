@@ -1,0 +1,79 @@
+steps:
+  - bash: |
+      echo "Build.SourceBranchName: "$BUILD_SOURCEBRANCHNAME
+      echo "System.PullRequest.PullRequestNumber: "$SYSTEM_PULLREQUEST_PULLREQUESTNUMBER
+      echo "environment: "$(environment)
+      echo "isProd: "$(isProd)
+      NEW_BUILD_NUMBER=$(echo $BUILD_BUILDNUMBER.${BUILD_SOURCEVERSION:0:8})
+      echo "New Build Number: "$NEW_BUILD_NUMBER
+      echo "##vso[build.updatebuildnumber]$NEW_BUILD_NUMBER"
+    displayName: Add Commit to Build Number
+  - task: Bash@3
+    displayName: Print Environment variables
+    inputs:
+      targetType: 'inline'
+      script: 'env | sort'    
+      
+
+# C# CLI - BUILD AND PUBLISH ARTIFACT 
+  - task: DotNetCoreCLI@2
+    displayName: Build WmdaConnectCLI.csproj
+    inputs:
+      command: 'build'
+      projects: |
+        $(System.DefaultWorkingDirectory)/WmdaConnectCLI/WmdaConnectCLI.csproj
+      arguments: --output $(System.DefaultWorkingDirectory)/PubOut/WmdaConnectCLI --configuration Release
+
+  - task: PowerShell@2
+    displayName: 'Copy Appsettings.json to env'
+    inputs:
+      targetType: inline
+      script: Copy-Item "$(System.DefaultWorkingDirectory)\PubOut\WmdaConnectCLI\Properties\appsettings.json" -Destination "$(System.DefaultWorkingDirectory)\PubOut\WmdaConnectCLI\appsettings.$(environment).json"
+    
+  - task: PowerShell@2
+    displayName: 'Copy python Appsettings.json to env'
+    inputs:
+      targetType: inline 
+      script: Copy-Item "$(System.DefaultWorkingDirectory)\WmdaConnectCLIpy\Properties\appsettings.json" -Destination "$(System.DefaultWorkingDirectory)\WmdaConnectCLIpy\appsettings.$(environment).json" 
+
+  - task: ArchiveFiles@2
+    displayName: Zip WmdaConnectCLI
+    inputs:
+      rootFolderOrFile: '$(System.DefaultWorkingDirectory)/PubOut/WmdaConnectCLI'
+      includeRootFolder: false
+      archiveType: zip
+      archiveFile: '$(Build.ArtifactStagingDirectory)/WmdaConnectCLI/WmdaConnectCLI.$(Build.BuildNumber).zip'
+      replaceExistingArchive: true
+
+  - task: PublishPipelineArtifact@1
+    displayName: Publish WmdaConnectCLI
+    inputs:
+      targetPath: '$(Build.ArtifactStagingDirectory)/WmdaConnectCLI'
+      artifact: WmdaConnectCLI.$(Build.BuildNumber)
+      publishLocation: 'pipeline'    
+
+# PY CLI - PUBLISH ARTIFACT 
+  - task: ArchiveFiles@2
+    displayName: Zip WmdaConnectCLIpy
+    inputs:
+      rootFolderOrFile: '$(System.DefaultWorkingDirectory)/WmdaConnectCLIpy' 
+      includeRootFolder: false
+      archiveType: zip
+      archiveFile: '$(Build.ArtifactStagingDirectory)/WmdaConnectCLIpy/WmdaConnectCLIpy.$(Build.BuildNumber).zip'
+      replaceExistingArchive: true
+
+  - task: PublishPipelineArtifact@1
+    displayName: Publish WmdaConnectCLIpy
+    inputs:
+      targetPath: '$(Build.ArtifactStagingDirectory)/WmdaConnectCLIpy' 
+      artifact: WmdaConnectCLIpy.$(Build.BuildNumber)
+      publishLocation: 'pipeline'    
+
+
+# # BICEP - PUBLISH ARTIFACT 
+#   - task: PublishPipelineArtifact@1
+#     displayName: Publish main.bicep 
+#     inputs:
+#       targetPath: '$(Build.SourcesDirectory)/CICD/main.bicep'
+#       artifact: Bicep.$(Build.BuildNumber)
+#       publishLocation: 'pipeline'
