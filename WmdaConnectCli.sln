@@ -24,6 +24,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "templates", "templates", "{82B3FF95-BFD9-45EA-9A92-AE9CDFB780BE}"
 	ProjectSection(SolutionItems) = preProject
 		CICD\templates\build.yml = CICD\templates\build.yml
+		CICD\templates\variables.yml = CICD\templates\variables.yml
 	EndProjectSection
 EndProject
 Global

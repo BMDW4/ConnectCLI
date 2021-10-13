@@ -5,8 +5,8 @@ trigger:
     include:
     - '*'
 
-variables:
-  - template: templates/variables.yml
+#variables:
+#  - template: templates/variables.yml
 
 pool:
   vmImage: 'windows-latest'
