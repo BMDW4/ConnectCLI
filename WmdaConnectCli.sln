@@ -7,25 +7,24 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WmdaConnectCLI", "WmdaConne
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "WmdaConnectCLIpy", "WmdaConnectCLIpy\WmdaConnectCLIpy.pyproj", "{C4F12223-4DB6-41FD-B7FB-9F234B546DA2}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "submodules", "submodules", "{384A8879-51E1-4911-9DCD-DB9A97DE6E1C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WmdaConnect.Models", "WmdaConnect.Models\WmdaConnect.Models.csproj", "{B2902285-6226-4F94-9309-65457A10F19D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WmdaConnect.Models", "WmdaConnectShared\WmdaConnect.Models\WmdaConnect.Models.csproj", "{8967C77D-6F80-427F-B555-A4263ACB0E94}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WmdaConnect.Shared", "WmdaConnect.Shared\WmdaConnect.Shared.csproj", "{E9F96092-2227-4135-A3F9-8D2DADEB020F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WmdaConnect.Shared", "WmdaConnectShared\WmdaConnect.Shared\WmdaConnect.Shared.csproj", "{09F709D0-5725-44CD-AC99-9F0270D9E05C}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7DEE754F-C625-4837-8EC3-47D6D4D839EF}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CICD", "CICD", "{E3C46615-9BAF-4662-9D4A-E55EE470B4A9}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CICD", "CICD", "{6DB7AA57-005C-4C99-A32D-A736B8BD73F8}"
 	ProjectSection(SolutionItems) = preProject
 		CICD\azure-pipelines-cli.yml = CICD\azure-pipelines-cli.yml
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "templates", "templates", "{912508DA-F7BA-447B-BC4A-2160C5DDE478}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "templates", "templates", "{82B3FF95-BFD9-45EA-9A92-AE9CDFB780BE}"
 	ProjectSection(SolutionItems) = preProject
 		CICD\templates\build.yml = CICD\templates\build.yml
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{06DDE296-06F2-4B40-B1D8-169107678C2A}"
-	ProjectSection(SolutionItems) = preProject
-		.gitignore = .gitignore
+		CICD\templates\variables.yml = CICD\templates\variables.yml
 	EndProjectSection
 EndProject
 Global
@@ -40,22 +39,20 @@ Global
 		{998B7E0B-B4EB-4F0E-AC88-2584E9578CA6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C4F12223-4DB6-41FD-B7FB-9F234B546DA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C4F12223-4DB6-41FD-B7FB-9F234B546DA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8967C77D-6F80-427F-B555-A4263ACB0E94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8967C77D-6F80-427F-B555-A4263ACB0E94}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8967C77D-6F80-427F-B555-A4263ACB0E94}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8967C77D-6F80-427F-B555-A4263ACB0E94}.Release|Any CPU.Build.0 = Release|Any CPU
-		{09F709D0-5725-44CD-AC99-9F0270D9E05C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{09F709D0-5725-44CD-AC99-9F0270D9E05C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{09F709D0-5725-44CD-AC99-9F0270D9E05C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{09F709D0-5725-44CD-AC99-9F0270D9E05C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2902285-6226-4F94-9309-65457A10F19D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2902285-6226-4F94-9309-65457A10F19D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2902285-6226-4F94-9309-65457A10F19D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2902285-6226-4F94-9309-65457A10F19D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E9F96092-2227-4135-A3F9-8D2DADEB020F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9F96092-2227-4135-A3F9-8D2DADEB020F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E9F96092-2227-4135-A3F9-8D2DADEB020F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E9F96092-2227-4135-A3F9-8D2DADEB020F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{8967C77D-6F80-427F-B555-A4263ACB0E94} = {384A8879-51E1-4911-9DCD-DB9A97DE6E1C}
-		{09F709D0-5725-44CD-AC99-9F0270D9E05C} = {384A8879-51E1-4911-9DCD-DB9A97DE6E1C}
-		{912508DA-F7BA-447B-BC4A-2160C5DDE478} = {E3C46615-9BAF-4662-9D4A-E55EE470B4A9}
+		{82B3FF95-BFD9-45EA-9A92-AE9CDFB780BE} = {6DB7AA57-005C-4C99-A32D-A736B8BD73F8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {613E4555-DE7F-4868-8BE5-E2FFDE0AF87B}

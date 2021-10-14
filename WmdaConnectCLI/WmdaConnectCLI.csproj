@@ -18,8 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WmdaConnectShared\WmdaConnect.Models\WmdaConnect.Models.csproj" />
-    <ProjectReference Include="..\WmdaConnectShared\WmdaConnect.Shared\WmdaConnect.Shared.csproj" />
+    <ProjectReference Include="..\WmdaConnect.Models\WmdaConnect.Models.csproj" />
+    <ProjectReference Include="..\WmdaConnect.Shared\WmdaConnect.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>

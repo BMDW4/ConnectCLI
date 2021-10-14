@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="WmdaConnect.Models.MessageBases.Message">
+    <Position X="5.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAIAAIAAA=</HashCode>
+      <FileName>MessageBases\Message.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Orientation="Right" Position="1.289" />
+  </Class>
+  <Class Name="WmdaConnect.Models.MessageBases.MessageRequest">
+    <Position X="3" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAEgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAg=</HashCode>
+      <FileName>MessageBases\MessageRequest.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WmdaConnect.Models.MessageBases.Message&lt;T&gt;">
+    <Position X="3" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAIAAIAAA=</HashCode>
+      <FileName>MessageBases\MessageT.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Orientation="Right" Position="0.123" />
+  </Class>
+  <Class Name="WmdaConnect.Models.MessageBases.MessageRequest&lt;T&gt;">
+    <Position X="3" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>MessageBases\MessageRequestT.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="WmdaConnect.Models.MessageBases.IMessage">
+    <Position X="8.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAEAAAAAAAAAAAAAAABAAAAAAAAIAAIAAA=</HashCode>
+      <FileName>MessageBases\IMessage.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

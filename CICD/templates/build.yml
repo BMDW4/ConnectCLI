@@ -24,17 +24,17 @@ steps:
         $(System.DefaultWorkingDirectory)/WmdaConnectCLI/WmdaConnectCLI.csproj
       arguments: --output $(System.DefaultWorkingDirectory)/PubOut/WmdaConnectCLI --configuration Release
 
-  - task: PowerShell@2
-    displayName: 'Copy Appsettings.json to env'
-    inputs:
-      targetType: inline
-      script: Copy-Item "$(System.DefaultWorkingDirectory)\PubOut\WmdaConnectCLI\Properties\appsettings.json" -Destination "$(System.DefaultWorkingDirectory)\PubOut\WmdaConnectCLI\appsettings.$(environment).json"
+  #- task: PowerShell@2
+  #  displayName: 'Copy Appsettings.json to env'
+  #  inputs:
+  #    targetType: inline
+  #    script: Copy-Item "$(System.DefaultWorkingDirectory)\PubOut\WmdaConnectCLI\Properties\appsettings.json" -Destination "$(System.DefaultWorkingDirectory)\PubOut\WmdaConnectCLI\appsettings.$(environment).json"
     
-  - task: PowerShell@2
-    displayName: 'Copy python Appsettings.json to env'
-    inputs:
-      targetType: inline 
-      script: Copy-Item "$(System.DefaultWorkingDirectory)\WmdaConnectCLIpy\Properties\appsettings.json" -Destination "$(System.DefaultWorkingDirectory)\WmdaConnectCLIpy\appsettings.$(environment).json" 
+  #- task: PowerShell@2
+  #  displayName: 'Copy python Appsettings.json to env'
+  #  inputs:
+  #    targetType: inline 
+  #    script: Copy-Item "$(System.DefaultWorkingDirectory)\WmdaConnectCLIpy\Properties\appsettings.json" -Destination "$(System.DefaultWorkingDirectory)\WmdaConnectCLIpy\appsettings.$(environment).json" 
 
   - task: ArchiveFiles@2
     displayName: Zip WmdaConnectCLI
