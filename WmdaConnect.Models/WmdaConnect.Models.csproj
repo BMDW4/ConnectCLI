@@ -21,4 +21,8 @@
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.7.0" />
   </ItemGroup>
 
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy /y /d $(ProjectDir)\WmdaConnect.Models.XmlComments.xml  $(ProjectDir)..\..\WmdaConnectApi&#xD;&#xA;" />
+  </Target>
+
 </Project>
