@@ -23,7 +23,6 @@ namespace WmdaConnectCLI
     internal static class Program
     {
         private static Ack _ackMessage;
-        private static IConfigurationRoot _configuration;
         private static string _accessToken;
         private static string _urlRoot;
         private static PingRequest _pingRequest;
@@ -68,6 +67,7 @@ namespace WmdaConnectCLI
 
         public static async Task ConnectRegistry(ConnectOptions opts)
         {
+            IConfigurationRoot _configuration;
             var builder = new ConfigurationBuilder()
                 .SetBasePath(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location))
                 .AddJsonFile($"appsettings.{opts.Environment}.json", optional: false, reloadOnChange: true);
@@ -123,6 +123,7 @@ namespace WmdaConnectCLI
 
         public static async Task RunListenOptions(ListenOptions opts)
         {
+            IConfigurationRoot _configuration;
             var builder = new ConfigurationBuilder()
                 .SetBasePath(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location))
                 .AddJsonFile($"appsettings.{opts.Environment ?? _connect.Environment}.json", optional: false, reloadOnChange: true);
@@ -191,6 +192,8 @@ namespace WmdaConnectCLI
 
         public static async Task RunPingOptions(PingOptions opts)
         {
+            IConfigurationRoot _configuration;
+
             var builder = new ConfigurationBuilder()
                 .SetBasePath(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location))
                 .AddJsonFile($"appsettings.{opts.Environment ?? _connect.Environment}.json", optional: false, reloadOnChange: true);
@@ -332,6 +335,7 @@ namespace WmdaConnectCLI
 
         public static async Task RunNewRegistryOptions(NewRegistryOptions opts)
         {
+            IConfigurationRoot _configuration;
             var builder = new ConfigurationBuilder()
                 .SetBasePath(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location))
                 .AddJsonFile($"appsettings.{opts.Environment ?? _connect.Environment}.json", optional: false, reloadOnChange: true);
@@ -386,7 +390,6 @@ namespace WmdaConnectCLI
             }
             catch (Exception e)
             {
-                //Console.WriteLine(e.Message);
                 await Console.OpenStandardOutput().WriteAsync(Encoding.UTF8.GetBytes(e.Message));
             }
 
@@ -402,6 +405,7 @@ namespace WmdaConnectCLI
 
         public static async Task RunRemoveRegistryOptions(RemoveRegistryOptions opts)
         {
+            IConfigurationRoot _configuration;
             var builder = new ConfigurationBuilder()
                 .SetBasePath(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location))
                 .AddJsonFile($"appsettings.{opts.Environment ?? _connect.Environment}.json", optional: false, reloadOnChange: true);
@@ -448,7 +452,6 @@ namespace WmdaConnectCLI
             }
             catch (Exception e)
             {
-                //Console.WriteLine(e.Message);
                 await Console.OpenStandardOutput().WriteAsync(Encoding.UTF8.GetBytes(e.Message));
             }
 
@@ -464,6 +467,7 @@ namespace WmdaConnectCLI
 
         public static async Task RunMessage(MessageOptions opts)
         {
+            IConfigurationRoot _configuration;
             var builder = new ConfigurationBuilder()
                 .SetBasePath(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location))
                 .AddJsonFile($"appsettings.{opts.Environment ?? _connect.Environment}.json", optional: false, reloadOnChange: true);
@@ -584,8 +588,7 @@ namespace WmdaConnectCLI
                     }
                     case MessageTypes.SampleInfo:
                     {
-                        var sampleInfoRequest = new SampleInfoRequest();
-                        sampleInfoRequest = JsonConvert.DeserializeObject<SampleInfoRequest>(messageContent);
+                        var sampleInfoRequest = JsonConvert.DeserializeObject<SampleInfoRequest>(messageContent);
 
                         if (opts.TargetRegistry is not null)
                             sampleInfoRequest.Recipient = opts.TargetRegistry;

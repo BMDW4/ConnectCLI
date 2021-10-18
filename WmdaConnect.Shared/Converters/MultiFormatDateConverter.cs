@@ -15,13 +15,10 @@ namespace WmdaConnect.Shared.Converters
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             var val = IsNullableType(objectType);
-            if (reader.TokenType == JsonToken.Null)
+            if (reader.TokenType == JsonToken.Null && !val)
             {
-                if (!val)
-                {
-                    throw new JsonSerializationException(
-                        string.Format(CultureInfo.InvariantCulture, "Cannot convert null value to {0}.", objectType));
-                }
+                throw new JsonSerializationException(
+                    string.Format(CultureInfo.InvariantCulture, "Cannot convert null value to {0}.", objectType));
             }
 
             var underlyingObjectType = val ? Nullable.GetUnderlyingType(objectType)! : objectType;
