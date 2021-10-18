@@ -53,28 +53,28 @@ namespace WmdaConnect.Models.MessagePayloads
         public string DonorCcr5Status { get; set; }
 
         /// <summary>
-        /// Donor weight D_WEIGHT Opt 3
+        /// Donor weight in kilograms D_WEIGHT Opt 3
         /// </summary>
-        [MaxLength(3)]
-        public string DonorWeight { get; set; }
+        [Range(0, 999)]
+        public int? DonorWeightKg { get; set; }
 
         /// <summary>
-        /// Donor height D_HEIGHT Opt 3
+        /// Donor height in centimetres D_HEIGHT Opt 3
         /// </summary>
-        [MaxLength(3)]
-        public string DonorHeight { get; set; }
+        [Range(0,999)]
+        public int? DonorHeightCm { get; set; }
 
         /// <summary>
         /// Number of transfusions D_NMBR_TRANS Opt 1
         /// </summary>
-        [MaxLength(1)]
-        public string NumberOfTransfusions { get; set; }
+        [Range(0, 9)]
+        public int? NumberOfTransfusions { get; set; }
 
         /// <summary>
         /// Number of pregnancies D_NMBR_PREG Opt 1
         /// </summary>
-        [MaxLength(1)]
-        public string NumberOfPregnancies { get; set; }
+        [Range(0, 9)]
+        public int? NumberOfPregnancies { get; set; }
 
         [JsonProperty("idm")]
         public InfectiousDiseaseMarkers InfectiousDiseaseMarkers { get; set; }
