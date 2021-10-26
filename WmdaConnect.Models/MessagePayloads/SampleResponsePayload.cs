@@ -46,12 +46,14 @@ namespace WmdaConnect.Models.MessagePayloads
         /// <summary>
         /// GvH reactivity GVH_REAC Opt 3
         /// </summary>
-        public string GvhReac { get; set; }
+        [Range(0, 100)]
+        public int? GvhReactivityPercent { get; set; }
 
         /// <summary>
         /// HvG reactivity HVG_REAC Opt 3
         /// </summary>
-        public string HvgReac { get; set; }
+        [Range(0, 100)]
+        public int? HvgReactivityPercent { get; set; }
 
         /// <summary>
         /// Donor blood group and rhesus D_ABO Opt 3, //PRESENT IN TYP_RES
@@ -134,6 +136,5 @@ namespace WmdaConnect.Models.MessagePayloads
         [Required]
         [MaxLength(DonorAcceptField.MaxLength)]
         public string DonAccpt { get; set; }
-
     }
 }
