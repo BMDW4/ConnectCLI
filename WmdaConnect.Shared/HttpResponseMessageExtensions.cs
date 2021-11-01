@@ -11,7 +11,7 @@ namespace WmdaConnect.Shared
     {
         public static void EnsureSuccessCodeReportBody(this HttpResponseMessage response)
         {
-            if (response.IsSuccessStatusCode) return; 
+            if (response.IsSuccessStatusCode) return;
 
             var body = response.Content.ReadAsStringAsync().Result;
 
