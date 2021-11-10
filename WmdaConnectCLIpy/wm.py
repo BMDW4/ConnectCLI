@@ -1,4 +1,3 @@
-
 import argparse
 import msal
 import json
@@ -17,8 +16,6 @@ def ack(client_id, client_secret, message):
     with open('appsettings.'+str(env)+'.json', 'r') as f:
         config = json.load(f)
 
-    tenant_id = config["tenant_id"]
-
     app = msal.ConfidentialClientApplication(
         client_id=client_id,
         client_credential=client_secret,
@@ -26,22 +23,22 @@ def ack(client_id, client_secret, message):
         )
     
     result = None
-
+    
     result = app.acquire_token_silent(config["scope"], account=None)
-
+    
     if not result:
         logging.info("No suitable token exists in cache. Let's get a new one from AAD.")
         result = app.acquire_token_for_client(scopes=config["scope"])
-
-
+    
+    
     if "access_token" in result:
         # Call a protected API with the access token.
-        endpoint = config["endpoint"]+"/Ack"
+        endpoint = config["endpoint"]+"/AckRequest"
         http_headers = {'Authorization': 'Bearer ' + result['access_token'],
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'}
 
-        body = {"TargetRegistry":message["FromRegistry"], "CorrelationGuid": message["CorrelationGuid"]}
+        body = {"Recipient":message["Sender"], "CorrelationGuid": message["CorrelationGuid"]}
         body = json.dumps(body)
         data = requests.post(endpoint, data=body, headers=http_headers, stream=False)
 
@@ -54,28 +51,60 @@ def ack(client_id, client_secret, message):
             print("Body:\n" + data.text)
             print('\x1b[0m')
             sys.exit()
-    
+        
     else:
         print("Access token not found.")
         print(result.get("error"))
         print(result.get("error_description"))
+        
+def get_registry (client_id, client_secret):
+    
+     
+     with open('appsettings.'+str(env)+'.json', 'r') as f:
+         config = json.load(f)
+         
+     url = config["endpoint"]+"/RegistryDetails"    
+     scope = config["scope"]
+     
+     app = msal.ConfidentialClientApplication(
+        client_id=client_id,
+        client_credential=client_secret,
+        authority= config["authority"]
+        )
 
+     result = None
 
+     result = app.acquire_token_silent(scope, account=None)
+
+     if not result:
+        logging.info("No suitable token exists in cache. Let's get a new one from AAD.")
+        result = app.acquire_token_for_client(scopes=scope)
+
+     access_token = result['access_token']
+     
+     auth_token_header_value = "Bearer %s" % access_token
+
+     my_headers = {"Authorization" : auth_token_header_value}
+
+     response = requests.get(url, headers=my_headers)
+     
+     data = response.json()
+     
+     return data['queueName']
+        
 
 def listen(client_id, client_secret, guid=None, timeout=None):
     
     with open('appsettings.'+str(env)+'.json', 'r') as f:
-    #with open('../WmdaConnectCLIpy_unzipped/appsettings.'+str(env)+'.json', 'r') as f:
         config = json.load(f)
 
     tenant_id = config["tenant_id"]
-    #client_id = config["client_id"]
-    #client_secret = config["client_secret"]
     SERVICE_BUS_NAMESPACE = config["service_bus_namespace"]
-    QUEUE_NAME = client_id
+    QUEUE_NAME = get_registry(client_id, client_secret)
+    
 
     credential = ClientSecretCredential(tenant_id=tenant_id, client_id=client_id, client_secret=client_secret)
-
+    
     servicebus_client = ServiceBusClient(SERVICE_BUS_NAMESPACE, credential)
 
 
@@ -95,12 +124,12 @@ def listen(client_id, client_secret, guid=None, timeout=None):
                         message_type = message_type.decode()
                         message = json.loads(str(msg))
 
-                        if message_type == "PingMessage":
+                        if message_type == "Ping":
                             print('\x1b[0;37;44m' + f"Received:\n{message}" + '\x1b[0m') # Blue back, white text
                             ack(client_id, client_secret, message)
                             receiver.complete_message(msg)
-
-                        elif message_type == "AckMessage":
+                            
+                        elif message_type == "Ack":
                             pass # listen command should ignore Ack messages
 
                         else:
@@ -124,7 +153,7 @@ def listen_for_ack(client_id, client_secret, guid, timeout):
     tenant_id = config["tenant_id"]
 
     SERVICE_BUS_NAMESPACE = config["service_bus_namespace"]
-    QUEUE_NAME = client_id
+    QUEUE_NAME = get_registry(client_id, client_secret)
 
     credential = ClientSecretCredential(tenant_id=tenant_id, client_id=client_id, client_secret=client_secret)
 
@@ -145,11 +174,11 @@ def listen_for_ack(client_id, client_secret, guid, timeout):
                         message_type = message_type.decode()
                         message = json.loads(str(msg))
 
-                        if message_type == "PingMessage":
+                        if message_type == "Ping":
                             print('\x1b[0;37;44m' + f"Received:\n{message}" + '\x1b[0m') # Blue back, white text.
                             ack(client_id, client_secret, message)
 
-                        elif message_type == "AckMessage":
+                        elif message_type == "Ack":
 
                             if guid != message["CorrelationGuid"]:
                                 print("Stale Message: " + message["CorrelationGuid"])
@@ -177,8 +206,6 @@ def ping(client_id, client_secret, target_registry):
     with open('appsettings.'+str(env)+'.json', 'r') as f:
         config = json.load(f)
 
-    tenant_id = config["tenant_id"]
-
     app = msal.ConfidentialClientApplication(
         client_id=client_id,
         client_credential=client_secret,
@@ -195,12 +222,12 @@ def ping(client_id, client_secret, target_registry):
     if "access_token" in result:
         # Call a protected API with the access token.
 
-        endpoint = config["endpoint"]+"/Ping"
+        endpoint = config["endpoint"]+"/PingRequest"
         http_headers = {'Authorization': 'Bearer ' + result['access_token'],
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'}
         guid = str(uuid.uuid1())
-        body = {"TargetRegistry":target_registry, "CorrelationGuid": guid}
+        body = {"Recipient":target_registry, "CorrelationGuid": guid}
         body = json.dumps(body)
         data = requests.post(endpoint, data=body, headers=http_headers, stream=False)
         if data.status_code == 200:
