@@ -19,21 +19,21 @@ def ack(client_id, client_secret, message):
     app = msal.ConfidentialClientApplication(
         client_id=client_id,
         client_credential=client_secret,
-        authority=config["authority"]
+        authority="https://login.microsoftonline.com/"+config["TenantId"]
         )
     
     result = None
     
-    result = app.acquire_token_silent(config["scope"], account=None)
+    result = app.acquire_token_silent([config["azureFunctionAppClientId"]+"/.default"], account=None)
     
     if not result:
         logging.info("No suitable token exists in cache. Let's get a new one from AAD.")
-        result = app.acquire_token_for_client(scopes=config["scope"])
+        result = app.acquire_token_for_client(scopes=[config["azureFunctionAppClientId"]+"/.default"])
     
     
     if "access_token" in result:
         # Call a protected API with the access token.
-        endpoint = config["endpoint"]+"/AckRequest"
+        endpoint = config["urlRoot"]+"/AckRequest"
         http_headers = {'Authorization': 'Bearer ' + result['access_token'],
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'}
@@ -63,13 +63,13 @@ def get_registry (client_id, client_secret):
      with open('appsettings.'+str(env)+'.json', 'r') as f:
          config = json.load(f)
          
-     url = config["endpoint"]+"/RegistryDetails"    
-     scope = config["scope"]
+     url = config["urlRoot"]+"/RegistryDetails"    
+     scope = [config["azureFunctionAppClientId"]+"/.default"]
      
      app = msal.ConfidentialClientApplication(
         client_id=client_id,
         client_credential=client_secret,
-        authority= config["authority"]
+        authority= "https://login.microsoftonline.com/"+config["TenantId"]
         )
 
      result = None
@@ -98,8 +98,8 @@ def listen(client_id, client_secret, guid=None, timeout=None):
     with open('appsettings.'+str(env)+'.json', 'r') as f:
         config = json.load(f)
 
-    tenant_id = config["tenant_id"]
-    SERVICE_BUS_NAMESPACE = config["service_bus_namespace"]
+    tenant_id = config["TenantId"]
+    SERVICE_BUS_NAMESPACE = config["ServiceBusNamespace"]
     QUEUE_NAME = get_registry(client_id, client_secret)
     
 
@@ -150,9 +150,9 @@ def listen_for_ack(client_id, client_secret, guid, timeout):
     with open('appsettings.'+str(env)+'.json', 'r') as f:
         config = json.load(f)
 
-    tenant_id = config["tenant_id"]
+    tenant_id = config["TenantId"]
 
-    SERVICE_BUS_NAMESPACE = config["service_bus_namespace"]
+    SERVICE_BUS_NAMESPACE = config["ServiceBusNamespace"]
     QUEUE_NAME = get_registry(client_id, client_secret)
 
     credential = ClientSecretCredential(tenant_id=tenant_id, client_id=client_id, client_secret=client_secret)
@@ -209,20 +209,20 @@ def ping(client_id, client_secret, target_registry):
     app = msal.ConfidentialClientApplication(
         client_id=client_id,
         client_credential=client_secret,
-        authority=config["authority"]
+        authority="https://login.microsoftonline.com/"+config["TenantId"]
         )
 
     result = None
 
-    result = app.acquire_token_silent(config["scope"], account=None)
+    result = app.acquire_token_silent([config["azureFunctionAppClientId"]+"/.default"], account=None)
 
     if not result:
         logging.info("No suitable token exists in cache. Let's get a new one from AAD.")
-        result = app.acquire_token_for_client(scopes=config["scope"])
+        result = app.acquire_token_for_client(scopes=[config["azureFunctionAppClientId"]+"/.default"])
     if "access_token" in result:
         # Call a protected API with the access token.
 
-        endpoint = config["endpoint"]+"/PingRequest"
+        endpoint = config["urlRoot"]+"/PingRequest"
         http_headers = {'Authorization': 'Bearer ' + result['access_token'],
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'}
