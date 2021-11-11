@@ -5,5 +5,8 @@ namespace WmdaConnect.Models
 {
     public class NoResult : Message<NoResultPayload>
     {
+        public NoResult(MessageRequest<NoResultPayload> messageRequest) : base(messageRequest)
+        {
+        }
     }
 }

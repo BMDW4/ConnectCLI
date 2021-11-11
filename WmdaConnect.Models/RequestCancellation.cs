@@ -5,5 +5,8 @@ namespace WmdaConnect.Models
 {
     public class RequestCancellation : Message<RequestCancellationPayload>
     {
+        public RequestCancellation(MessageRequest<RequestCancellationPayload> messageRequest) : base(messageRequest)
+        {
+        }
     }
 }

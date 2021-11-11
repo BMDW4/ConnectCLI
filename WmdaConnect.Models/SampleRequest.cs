@@ -5,5 +5,8 @@ namespace WmdaConnect.Models
 {
     public class SampleRequest : Message<SampleRequestPayload>
     {
+        public SampleRequest(MessageRequest<SampleRequestPayload> messageRequest) : base(messageRequest)
+        {
+        }
     }
 }

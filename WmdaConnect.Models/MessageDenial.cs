@@ -5,5 +5,8 @@ namespace WmdaConnect.Models
 {
     public class MessageDenial : Message<MessageDenialPayload>
     {
+        public MessageDenial(MessageRequest<MessageDenialPayload> messageRequest) : base(messageRequest)
+        {
+        }
     }
 }

@@ -5,5 +5,8 @@ namespace WmdaConnect.Models
 {
     public class ResultReminder : Message<ResultReminderPayload>
     {
+        public ResultReminder(MessageRequest<ResultReminderPayload> messageRequest) : base(messageRequest)
+        {
+        }
     }
 }

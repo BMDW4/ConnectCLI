@@ -8,6 +8,12 @@ namespace WmdaConnect.Models.MessageBases
     /// </summary>
     public abstract class Message : MessageRequest, IMessage
     {
+        public Message(MessageRequest messageRequest)
+        {
+            Recipient = messageRequest.Recipient;
+            CorrelationGuid = messageRequest.CorrelationGuid;
+        }
+
         /// <summary>
         /// 4 digit ION of sender
         /// </summary>

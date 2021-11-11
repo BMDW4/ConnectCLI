@@ -5,5 +5,8 @@ namespace WmdaConnect.Models
 {
     public class CordBloodUnitReportRequest : Message<CordBloodUnitReportRequestPayload>
     {
+        public CordBloodUnitReportRequest(MessageRequest<CordBloodUnitReportRequestPayload> messageRequest) : base(messageRequest)
+        {
+        }
     }
 }
