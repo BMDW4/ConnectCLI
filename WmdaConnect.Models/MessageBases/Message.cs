@@ -6,7 +6,7 @@ namespace WmdaConnect.Models.MessageBases
     /// <summary>
     /// Based class for Messages (information placed on queue)
     /// </summary>
-    public abstract class Message : MessageRequest, IMessage
+    public abstract class Message : MessageRequest
     {
         /// <summary>
         /// 4 digit ION of sender
