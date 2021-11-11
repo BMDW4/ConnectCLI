@@ -4,7 +4,7 @@ using WmdaConnect.Models.FieldDictionary;
 namespace WmdaConnect.Models.IdTypes
 {
     //Attributes here have no effect on swagger, for reference only
-    internal interface IHasReferenceCode
+    public interface IHasReferenceCode
     {
         /// <summary>
         /// Reference code REF_CODE Req 15
