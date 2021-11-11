@@ -1,12 +1,17 @@
 ﻿using WmdaConnect.Models.MessageBases;
 using WmdaConnect.Models.MessagePayloads;
 
-namespace WmdaConnect.Models
+namespace WmdaConnect.Models;
+
+public class InfectiousDiseaseMarkerRequest : Message<InfectiousDiseaseMarkerRequestPayload>
 {
-    public class InfectiousDiseaseMarkerRequest : Message<InfectiousDiseaseMarkerRequestPayload>
+    public static explicit operator InfectiousDiseaseMarkerRequest(InfectiousDiseaseMarkerRequestRequest messageRequest)
     {
-        public InfectiousDiseaseMarkerRequest(MessageRequest<InfectiousDiseaseMarkerRequestPayload> messageRequest) : base(messageRequest)
+        return new InfectiousDiseaseMarkerRequest()
         {
-        }
+            Recipient = messageRequest.Recipient,
+            CorrelationGuid = messageRequest.CorrelationGuid,
+            Payload = messageRequest.Payload
+        };
     }
 }
