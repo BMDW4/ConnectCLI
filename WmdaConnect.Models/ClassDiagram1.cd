@@ -1,13 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Class Name="WmdaConnect.Models.MessageBases.Message">
-    <Position X="5.75" Y="4.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAIAAIAAA=</HashCode>
-      <FileName>MessageBases\Message.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Orientation="Right" Position="1.289" />
-  </Class>
   <Class Name="WmdaConnect.Models.MessageBases.MessageRequest">
     <Position X="3" Y="0.5" Width="1.5" />
     <TypeIdentifier>
@@ -16,12 +8,11 @@
     </TypeIdentifier>
   </Class>
   <Class Name="WmdaConnect.Models.MessageBases.Message&lt;T&gt;">
-    <Position X="3" Y="4.5" Width="1.5" />
+    <Position X="5.5" Y="4.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAIAAIAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>MessageBases\MessageT.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Orientation="Right" Position="0.123" />
   </Class>
   <Class Name="WmdaConnect.Models.MessageBases.MessageRequest&lt;T&gt;">
     <Position X="3" Y="2.75" Width="1.5" />
@@ -30,12 +21,41 @@
       <FileName>MessageBases\MessageRequestT.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Interface Name="WmdaConnect.Models.MessageBases.IMessage">
-    <Position X="8.5" Y="4.5" Width="1.5" />
+  <Class Name="WmdaConnect.Models.MessageBases.Message">
+    <Position X="5.5" Y="2.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAEAAAAAAAAAAAAAAABAAAAAAAAIAAIAAA=</HashCode>
-      <FileName>MessageBases\IMessage.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAIAAIAAA=</HashCode>
+      <FileName>MessageBases\Message.cs</FileName>
     </TypeIdentifier>
-  </Interface>
+    <Lollipop Orientation="Bottom" Position="1.3" />
+  </Class>
+  <Class Name="WmdaConnect.Models.PingRequest">
+    <Position X="8" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>PingRequest.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WmdaConnect.Models.TypingRequest">
+    <Position X="5.75" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TypingRequest.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WmdaConnect.Models.TypingRequestRequest">
+    <Position X="3" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TypingRequestRequest.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WmdaConnect.Models.Ping">
+    <Position X="8" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Ping.cs</FileName>
+    </TypeIdentifier>
+  </Class>
   <Font Name="Segoe UI" Size="9" />
 </ClassDiagram>
