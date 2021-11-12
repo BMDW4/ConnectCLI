@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace WmdaConnect.Models.MessageBases
 {
-    public abstract class Message<T> :MessageRequest<T>, IMessage
+    public abstract class Message<T> : MessageRequest<T>, IMessage
     {
         /// <summary>
         /// 4 digit ION of sender

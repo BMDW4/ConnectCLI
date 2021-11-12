@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace WmdaConnect.Models.MessageBases
 {
-    public abstract class MessageRequest
+    public abstract class MessageRequest : IMessageRequest
     {
         protected MessageRequest()
         {

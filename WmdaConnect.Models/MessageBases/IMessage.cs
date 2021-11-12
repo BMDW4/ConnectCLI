@@ -2,11 +2,9 @@
 
 namespace WmdaConnect.Models.MessageBases
 {
-    public interface IMessage
+    public interface IMessage : IMessageRequest
     {
         public string Sender { get; set; }
-
-        public MessageTypes MessageType { get; }
 
         public DateTime SentAtUtc { get; set; }
 
