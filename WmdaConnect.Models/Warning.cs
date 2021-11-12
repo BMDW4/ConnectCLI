@@ -5,8 +5,5 @@ namespace WmdaConnect.Models
 {
     public class Warning : Message<WarningPayload>
     {
-        public Warning(MessageRequest<WarningPayload> messageRequest) : base(messageRequest)
-        {
-        }
     }
 }

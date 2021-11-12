@@ -5,8 +5,5 @@ namespace WmdaConnect.Models
 {
     public class TypingResponse : Message<TypingResponsePayload>
     {
-        public TypingResponse(MessageRequest<TypingResponsePayload> messageRequest) : base(messageRequest)
-        {
-        }
     }
 }

@@ -5,8 +5,5 @@ namespace WmdaConnect.Models
 {
     public class ReservationResult : Message<ReservationResultPayload>
     {
-        public ReservationResult(MessageRequest<ReservationResultPayload> messageRequest) : base(messageRequest)
-        {
-        }
     }
 }

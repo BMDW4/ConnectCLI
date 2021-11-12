@@ -5,8 +5,5 @@ namespace WmdaConnect.Models
 {
     public class SampleInfo : Message<SampleInfoPayload>
     {
-        public SampleInfo(MessageRequest<SampleInfoPayload> messageRequest) : base(messageRequest)
-        {
-        }
     }
 }
