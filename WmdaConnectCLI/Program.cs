@@ -1,13 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Azure;
 using Azure.Core;
 using Azure.Identity;
 using Azure.Messaging.ServiceBus;
+
 using CommandLine;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Identity.Client;
@@ -48,7 +52,7 @@ namespace WmdaConnectCLI
 
 
             await parser
-                .ParseArguments<ConnectOptions, PingOptions, ListenOptions, NewRegistryOptions, RemoveRegistryOptions, MessageOptions>(args)
+                .ParseArguments<ConnectOptions, PingOptions, ListenOptions, NewRegistryOptions, RemoveRegistryOptions, MessageOptions, DownloadOptions>(args)
                 .MapResult(
                     (ConnectOptions opts) => ConnectRegistry(opts),
                     (PingOptions opts) => RunPingOptions(opts),
@@ -56,6 +60,7 @@ namespace WmdaConnectCLI
                     (NewRegistryOptions opts) => RunNewRegistryOptions(opts),
                     (RemoveRegistryOptions opts) => RunRemoveRegistryOptions(opts),
                     (MessageOptions opts) => RunMessage(opts),
+                    (DownloadOptions opts) => RunDownloadAttachments(opts),
                     HandleParseError);
         }
 
@@ -168,8 +173,8 @@ namespace WmdaConnectCLI
                 await processor.StartProcessingAsync();
 
                 Console.WriteLine("Listening...Press any key to stop listening");
-                Console.ReadKey();
 
+                Console.ReadKey();
                 Console.WriteLine("Stopping the receiver...");
 
                 await processor.StopProcessingAsync();
@@ -327,6 +332,8 @@ namespace WmdaConnectCLI
             return registry;
         }
 
+       
+
         /* ----------------------------------------------------------------------------------------------------------- */
         /* ----------------------------------------------------------------------------------------------------------- */
         /* -----------------------------------------NEW REGISTRY FUNCTIONALITY---------------------------------------- */
@@ -457,7 +464,30 @@ namespace WmdaConnectCLI
 
         }
 
+        /* ----------------------------------------------------------------------------------------------------------- */
+        /* ----------------------------------------------------------------------------------------------------------- */
+        /* -----------------------------------------DOWNLOAD ATTACHMENT FUNCTIONALITY--------------------------------- */
+        /* ----------------------------------------------------------------------------------------------------------- */
+        /* ----------------------------------------------------------------------------------------------------------- */
 
+        public static async Task RunDownloadAttachments(DownloadOptions opts)
+        {
+            IConfigurationRoot _configuration;
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location))
+                .AddJsonFile($"appsettings.{opts.Environment ?? _connect.Environment}.json", optional: false, reloadOnChange: true);
+
+            _configuration = builder.Build();
+
+            var tenantId = _configuration["tenantId"];
+            var clientId = opts.ClientId ?? _connect.ClientId;
+            var clientSecret = opts.ClientSecret ?? _connect.ClientSecret;
+            var azureFunctionAppClientId = _configuration["mdmApiClientId"];
+            _urlRoot = _configuration["mdmApiUrlRoot"];
+
+            DownloadAttachment(opts.AttachmentGuid);
+
+        }
 
         /* ----------------------------------------------------------------------------------------------------------- */
         /* ----------------------------------------------------------------------------------------------------------- */
@@ -485,6 +515,7 @@ namespace WmdaConnectCLI
 
             var messageType = opts.MessageType;
             var fileName = opts.File;
+            var attachment = opts.Attachment;
             try
             {
 
@@ -500,6 +531,7 @@ namespace WmdaConnectCLI
                 _accessToken = result1.AccessToken;
 
                 TokenCredential credential = new ClientSecretCredential(tenantId, clientId, clientSecret);
+
 
                 await using var client = new ServiceBusClient(fullyQualifiedNamespace, credential);
 
@@ -526,8 +558,22 @@ namespace WmdaConnectCLI
                 {
                     case MessageTypes.TextMessage:
                     {
+                        //Need to get download URL
+                        var attachmentTicket = await GetAttachmentTicket(opts.Attachment);
+
+                        /*BlobServiceClient blobServiceClient = new BlobServiceClient(attachmentTicket.AttachmentUploadUrl);
+                        BlobContainerClient container = await blobServiceClient.GetBlobContainerAsync("my-container");
+                            var containerClient = blobServiceClient.GetBlobContainerClient("attachments");
+                        BlobClient blobClient = containerClient.GetBlobClient(blobName);
+
+                        await using FileStream uploadFileStream = File.OpenRead(opts.Attachment);
+                        await blob.UploadFromStreamAsync(stream);
+                        uploadFileStream.Close();*/
+
+                        UploadFileToAzureBlobStorage(opts.Attachment, $"{attachmentTicket.AttachmentGuid}/test.txt");
                         _textMessageRequest = JsonConvert.DeserializeObject<TextMessageRequest>(messageContent);
                     
+                        _textMessageRequest.AttachmentGuids.Add(attachmentTicket.AttachmentGuid);
                         if (opts.TargetRegistry is not null)
                             _textMessageRequest.Recipient = opts.TargetRegistry;
 
@@ -623,6 +669,7 @@ namespace WmdaConnectCLI
                     Content = httpContent
                 };
 
+
                 req.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", result1.AccessToken);
 
                 using var httpClient = new HttpClient();
@@ -677,8 +724,81 @@ namespace WmdaConnectCLI
             }
 
         }
+        private static async Task<AttachmentTicketResponse> GetAttachmentTicket(string fileName)
+        {
 
+            /*var url = $"{_urlRoot}/AttachmentTicket";
 
+            var req = new HttpRequestMessage(HttpMethod.Post, url))
+            {
+            };
+
+            req.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+
+            using var httpClient = new HttpClient();
+
+            var responseRegistry = await httpClient.SendAsync(req);
+
+            responseRegistry.EnsureSuccessCodeReportBody();
+
+            var responseBody = await responseRegistry.Content.ReadAsStringAsync();
+
+            var registry = JsonConvert.DeserializeObject<RegistryDetailsResponseModel>(responseBody);*/
+
+            return new AttachmentTicketResponse()
+            {
+
+                AttachmentGuid = Guid.NewGuid(),
+                AttachmentUploadUrl = $"https://wmdaattachmentstest.blob.core.windows.net/attachments/{fileName}?sp=racwdli&st=2021-11-18T09:08:05Z&se=2021-11-18T17:08:05Z&spr=https&sv=2020-08-04&sr=c&sig=g%2BJ40kzbm%2FJV60oj85FqeUv54fTO0Yh0PwPTj2%2BZ3r8%3D"
+            };
+        }
+
+        private static async Task<AttachmentDownloadResponse> GetAttachmentDownload(string fileName)
+        {
+
+            return new AttachmentDownloadResponse()
+            {
+
+                AttachmentGuid = Guid.NewGuid(),
+                DownloadUrl = "https://wmdaattachmentstest.blob.core.windows.net/attachments/6586a4fd-3233-41c1-8e80-92173990e61a/test.txt?sp=racwdyti&st=2021-11-18T09:44:09Z&se=2021-11-18T17:44:09Z&spr=https&sv=2020-08-04&sr=b&sig=RVwdpNLIkbwQWQ7YITNh2uN%2F%2FAZBMnGxXecxoFv9ZtU%3D"
+            };
+        }
+
+        static void UploadFileToAzureBlobStorage(string attachmentPath, string fileName)
+        {
+            string sasToken = "sp=racwdli&st=2021-11-18T09:08:05Z&se=2021-11-18T17:08:05Z&spr=https&sv=2020-08-04&sr=c&sig=g%2BJ40kzbm%2FJV60oj85FqeUv54fTO0Yh0PwPTj2%2BZ3r8%3D";
+            string storageAccount = "wmdaattachmentstest";
+            string containerName = "attachments";
+            string blobName = fileName;
+            var uploadFileStream = File.ReadAllBytes(attachmentPath);
+
+            string method = "PUT";
+            string sampleContent = attachmentPath;
+            int contentLength = uploadFileStream.Length;
+
+            string requestUri = $"https://{storageAccount}.blob.core.windows.net/{containerName}/{blobName}?{sasToken}";
+            //string requestUri = $"https://wmdaattachmentstest.blob.core.windows.net/attachments/test.txt?sp=racwdli&st=2021-11-17T14:30:21Z&se=2021-11-17T22:30:21Z&spr=https&sv=2020-08-04&sr=c&sig=7ptE9sTVeYd4nzT01tD%2FNkgr50MX0xuz7SMZp4fLd1A%3D";
+
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(requestUri);
+            request.Method = method;
+            request.ContentType = "application/octet-stream";
+            request.ContentLength = contentLength;
+            request.Headers.Add("x-ms-blob-type", "BlockBlob");
+
+            
+            using (Stream requestStream = request.GetRequestStream())
+            {
+                requestStream.Write(uploadFileStream, 0, uploadFileStream.Length);
+            }
+
+            using (HttpWebResponse resp = (HttpWebResponse)request.GetResponse())
+            {
+                if (resp.StatusCode == HttpStatusCode.OK)
+                { }
+            }
+        }
+
+    
 
         /* ----------------------------------------------------------------------------------------------------------- */
         /* ----------------------------------------------------------------------------------------------------------- */
@@ -762,7 +882,15 @@ namespace WmdaConnectCLI
                         Console.WriteLine();
 
                         var pingMessage = JsonConvert.DeserializeObject<Ping>(body); //May need a refactor for using Message class type
+                        var textMessage = JsonConvert.DeserializeObject<TextMessage>(body);
 
+                        if (textMessage.AttachmentGuids != null)
+                        {
+                            foreach (var attachmentGuid in textMessage.AttachmentGuids)
+                            {
+                                DownloadAttachment(attachmentGuid);
+                            }
+                        }
                         var url = $"{_urlRoot}/AckRequest";
 
                         var req = new HttpRequestMessage(HttpMethod.Post, url);
@@ -788,6 +916,52 @@ namespace WmdaConnectCLI
 
                     break;
             }
+        }
+
+        private static void DownloadAttachment(Guid attachmentGuid)
+        {
+            string downloadLocation = $@"{attachmentGuid}_test.txt";
+            var downloadUrl = RequestDownloadUrl(attachmentGuid);
+            Console.WriteLine(downloadUrl);
+            try
+            {
+
+                using (var client = new WebClient())
+                {
+                    client.DownloadFile(downloadUrl, $"{Path.Combine(Path.GetTempPath(), downloadLocation)}");
+                }
+
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"Downloaded {downloadLocation} to {Path.GetTempPath()}");
+                Console.ResetColor();
+            }
+            catch (RequestFailedException e)
+            {
+
+                if (e.Status == 403)
+                {
+                    Console.WriteLine("Read operation failed for SAS {0}", downloadUrl);
+                    Console.WriteLine("Additional error information: " + e.Message);
+                    Console.WriteLine();
+                }
+                else
+                {
+                    Console.WriteLine(e.Message);
+                    Console.ReadLine();
+                    throw;
+                }
+            }
+        }
+
+        private static string RequestDownloadUrl(Guid attachmentGuid)
+        {
+
+            var fileName = $@"{attachmentGuid}/test.txt";
+            var sasToken =
+                "sp=racwdli&st=2021-11-18T12:11:37Z&se=2021-11-18T20:11:37Z&spr=https&sv=2020-08-04&sr=c&sig=uLD%2Byb4htXR8vCHQlujM9a5gITdhkQMt5DyB40Ym%2BZ4%3D";
+            var sasUri = @$"https://wmdaattachmentstest.blob.core.windows.net/attachments/{fileName}?{sasToken}";
+
+            return sasUri;
         }
 
 
@@ -932,6 +1106,26 @@ namespace WmdaConnectCLI
 
         [Option('t', "targetRegistry", Required = false, HelpText = "Target Registry")]
         public string TargetRegistry { get; set; }
+
+        [Option('a', "attachments", Required = false, HelpText = "File attachments")]
+        public string Attachment { get; set; }
+        //TODO Use comma seperated attachments
+    }
+
+    [Verb("download", HelpText = "Download any incoming attachments")]
+    internal class DownloadOptions
+    {
+        [Option('c', "clientId", Required = false, HelpText = "Your Client ID")]
+        public string ClientId { get; set; }
+
+        [Option('s', "clientSecret", Required = false, HelpText = "Your Client Secret")]
+        public string ClientSecret { get; set; }
+
+        [Option('e', "env", Required = false, HelpText = "Environment")]
+        public string Environment { get; set; }
+
+        [Option('g', "guid", Required = false, HelpText = "Attachment Guid")]
+        public Guid AttachmentGuid { get; set; }
     }
 
 }

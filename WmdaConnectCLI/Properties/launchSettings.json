@@ -2,7 +2,7 @@
   "profiles": {
     "WmdaConnectCLI local ping": {
       "commandName": "Project",
-      "commandLineArgs": "connect --clientId 7e2df958-a01b-43db-aa66-41c4aa17bd3a --ClientSecret 71a4b8be-8d59-45ad-a9d8-05953f9770be --env stn9 --show"
+      "commandLineArgs": "download --clientId 13f0a70e-db40-4a9d-8251-112bf9996476 --ClientSecret 39d039aa-3ae4-4620-9b70-f1350ef93267 --env local --guid 6586a4fd-3233-41c1-8e80-92173990e61a"
     },
     "WmdaConnectCLI osc ping": {
       "commandName": "Project",

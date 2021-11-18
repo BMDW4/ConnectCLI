@@ -6,7 +6,7 @@ namespace WmdaConnect.Models
 {
     public class AttachmentTicketResponse
     {
-        public System.Guid AttachmentGuid { get; set; }
+        public Guid AttachmentGuid { get; set; }
         public string AttachmentUploadUrl { get; set; }
     }
 }
