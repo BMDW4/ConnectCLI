@@ -11,7 +11,6 @@ using Azure;
 using Azure.Core;
 using Azure.Identity;
 using Azure.Messaging.ServiceBus;
-
 using CommandLine;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Identity.Client;
@@ -485,7 +484,7 @@ namespace WmdaConnectCLI
             var azureFunctionAppClientId = _configuration["mdmApiClientId"];
             _urlRoot = _configuration["mdmApiUrlRoot"];
 
-            DownloadAttachment(opts.AttachmentGuid);
+            await DownloadAttachment(opts.AttachmentGuid);
 
         }
 
@@ -560,15 +559,6 @@ namespace WmdaConnectCLI
                     {
                         //Need to get download URL
                         var attachmentTicket = await GetAttachmentTicket(opts.Attachment);
-
-                        /*BlobServiceClient blobServiceClient = new BlobServiceClient(attachmentTicket.AttachmentUploadUrl);
-                        BlobContainerClient container = await blobServiceClient.GetBlobContainerAsync("my-container");
-                            var containerClient = blobServiceClient.GetBlobContainerClient("attachments");
-                        BlobClient blobClient = containerClient.GetBlobClient(blobName);
-
-                        await using FileStream uploadFileStream = File.OpenRead(opts.Attachment);
-                        await blob.UploadFromStreamAsync(stream);
-                        uploadFileStream.Close();*/
 
                         UploadFileToAzureBlobStorage(opts.Attachment, $"{attachmentTicket.AttachmentGuid}/test.txt");
                         _textMessageRequest = JsonConvert.DeserializeObject<TextMessageRequest>(messageContent);
@@ -724,6 +714,8 @@ namespace WmdaConnectCLI
             }
 
         }
+
+
         private static async Task<AttachmentTicketResponse> GetAttachmentTicket(string fileName)
         {
 
@@ -750,6 +742,7 @@ namespace WmdaConnectCLI
 
                 AttachmentGuid = Guid.NewGuid(),
                 AttachmentUploadUrl = $"https://wmdaattachmentstest.blob.core.windows.net/attachments/{fileName}?sp=racwdli&st=2021-11-18T09:08:05Z&se=2021-11-18T17:08:05Z&spr=https&sv=2020-08-04&sr=c&sig=g%2BJ40kzbm%2FJV60oj85FqeUv54fTO0Yh0PwPTj2%2BZ3r8%3D"
+
             };
         }
 
@@ -888,7 +881,7 @@ namespace WmdaConnectCLI
                         {
                             foreach (var attachmentGuid in textMessage.AttachmentGuids)
                             {
-                                DownloadAttachment(attachmentGuid);
+                                await DownloadAttachment(attachmentGuid);
                             }
                         }
                         var url = $"{_urlRoot}/AckRequest";
@@ -918,7 +911,7 @@ namespace WmdaConnectCLI
             }
         }
 
-        private static void DownloadAttachment(Guid attachmentGuid)
+        private static async Task DownloadAttachment(Guid attachmentGuid)
         {
             string downloadLocation = $@"{attachmentGuid}_test.txt";
             var downloadUrl = RequestDownloadUrl(attachmentGuid);
@@ -928,7 +921,7 @@ namespace WmdaConnectCLI
 
                 using (var client = new WebClient())
                 {
-                    client.DownloadFile(downloadUrl, $"{Path.Combine(Path.GetTempPath(), downloadLocation)}");
+                   await client.DownloadFileTaskAsync(downloadUrl, $"{Path.Combine(Path.GetTempPath(), downloadLocation)}");
                 }
 
                 Console.ForegroundColor = ConsoleColor.Green;
@@ -953,7 +946,7 @@ namespace WmdaConnectCLI
             }
         }
 
-        private static string RequestDownloadUrl(Guid attachmentGuid)
+        private static Uri RequestDownloadUrl(Guid attachmentGuid)
         {
 
             var fileName = $@"{attachmentGuid}/test.txt";
@@ -961,7 +954,7 @@ namespace WmdaConnectCLI
                 "sp=racwdli&st=2021-11-18T12:11:37Z&se=2021-11-18T20:11:37Z&spr=https&sv=2020-08-04&sr=c&sig=uLD%2Byb4htXR8vCHQlujM9a5gITdhkQMt5DyB40Ym%2BZ4%3D";
             var sasUri = @$"https://wmdaattachmentstest.blob.core.windows.net/attachments/{fileName}?{sasToken}";
 
-            return sasUri;
+            return new Uri(sasUri);
         }
 
 
