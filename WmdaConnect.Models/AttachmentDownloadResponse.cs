@@ -6,6 +6,8 @@
 
         public string DownloadUrl { get; set; }
 
+        public string FileName { get; set; }
+
     }
 
 }

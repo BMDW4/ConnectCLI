@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
 using Azure;
@@ -557,10 +558,12 @@ namespace WmdaConnectCLI
                     case MessageTypes.TextMessage:
                     {
                         //Need to get download URL
-                        var attachmentTicket = await GetAttachmentTicket(opts.Attachment);
+                        var attachmentTicket = await GetAttachmentTicket(_accessToken, opts.Attachment);
 
-                        UploadFileToAzureBlobStorage(opts.Attachment, $"{attachmentTicket.AttachmentGuid}/test.txt");
+                        UploadFileToAzureBlobStorage(opts.Attachment, attachmentTicket);
+                        
                         _textMessageRequest = JsonConvert.DeserializeObject<TextMessageRequest>(messageContent);
+
                     
                         _textMessageRequest.AttachmentGuids.Add(attachmentTicket.AttachmentGuid);
                         if (opts.TargetRegistry is not null)
@@ -715,61 +718,69 @@ namespace WmdaConnectCLI
         }
 
 
-        private static async Task<AttachmentTicketResponse> GetAttachmentTicket(string fileName)
+        private static async Task<AttachmentTicketResponse> GetAttachmentTicket(string accessToken, string fileName)
         {
 
-            /*var url = $"{_urlRoot}/AttachmentTicket";
+            var url = $"{_urlRoot}/AttachmentTicket";
 
-            var req = new HttpRequestMessage(HttpMethod.Post, url))
+
+            var attachmentTicketRequest = new AttachmentTicketRequest()
             {
+                FileName = Path.GetFileName(fileName)
             };
-
-            req.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
             using var httpClient = new HttpClient();
 
-            var responseRegistry = await httpClient.SendAsync(req);
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-            responseRegistry.EnsureSuccessCodeReportBody();
+            var responseAttachmentTicket = await httpClient.PostAsJsonAsync(url, attachmentTicketRequest);
 
-            var responseBody = await responseRegistry.Content.ReadAsStringAsync();
+            responseAttachmentTicket.EnsureSuccessCodeReportBody();
 
-            var registry = JsonConvert.DeserializeObject<RegistryDetailsResponseModel>(responseBody);*/
+            var responseBody = await responseAttachmentTicket.Content.ReadAsStringAsync();
 
-            return new AttachmentTicketResponse()
-            {
+            var attachmentTicket = JsonConvert.DeserializeObject<AttachmentTicketResponse>(responseBody);
 
-                AttachmentGuid = Guid.NewGuid(),
-                AttachmentUploadUrl = $"https://wmdaattachmentstest.blob.core.windows.net/attachments/{fileName}?sp=racwdli&st=2021-11-18T09:08:05Z&se=2021-11-18T17:08:05Z&spr=https&sv=2020-08-04&sr=c&sig=g%2BJ40kzbm%2FJV60oj85FqeUv54fTO0Yh0PwPTj2%2BZ3r8%3D"
-
-            };
+            return attachmentTicket;
         }
 
-        private static async Task<AttachmentDownloadResponse> GetAttachmentDownload(string fileName)
+        private static async Task<AttachmentDownloadResponse> GetAttachmentDownload(Guid attachmentGuid, string accessToken)
         {
 
-            return new AttachmentDownloadResponse()
-            {
+            var url = $"{_urlRoot}/AttachmentDownloadURL";
 
-                AttachmentGuid = Guid.NewGuid(),
-                DownloadUrl = "https://wmdaattachmentstest.blob.core.windows.net/attachments/6586a4fd-3233-41c1-8e80-92173990e61a/test.txt?sp=racwdyti&st=2021-11-18T09:44:09Z&se=2021-11-18T17:44:09Z&spr=https&sv=2020-08-04&sr=b&sig=RVwdpNLIkbwQWQ7YITNh2uN%2F%2FAZBMnGxXecxoFv9ZtU%3D"
+
+            var attachmentTicketRequest = new AttachmentDownloadRequest()
+            {
+                AttachmentGuid = attachmentGuid
             };
+
+            using var httpClient = new HttpClient();
+
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+
+            var responseAttachmentTicket = await httpClient.PostAsJsonAsync(url, attachmentTicketRequest);
+
+            responseAttachmentTicket.EnsureSuccessCodeReportBody();
+
+            var responseBody = await responseAttachmentTicket.Content.ReadAsStringAsync();
+
+            var attachmentTicket = JsonConvert.DeserializeObject<AttachmentDownloadResponse>(responseBody);
+
+            return attachmentTicket;
         }
 
-        static void UploadFileToAzureBlobStorage(string attachmentPath, string fileName)
+        static void UploadFileToAzureBlobStorage(string attachmentPath, AttachmentTicketResponse attachmentTicket)
         {
-            string sasToken = "sp=racwdli&st=2021-11-18T09:08:05Z&se=2021-11-18T17:08:05Z&spr=https&sv=2020-08-04&sr=c&sig=g%2BJ40kzbm%2FJV60oj85FqeUv54fTO0Yh0PwPTj2%2BZ3r8%3D";
-            string storageAccount = "wmdaattachmentstest";
-            string containerName = "attachments";
-            string blobName = fileName;
+
             var uploadFileStream = File.ReadAllBytes(attachmentPath);
 
             string method = "PUT";
             string sampleContent = attachmentPath;
             int contentLength = uploadFileStream.Length;
 
-            string requestUri = $"https://{storageAccount}.blob.core.windows.net/{containerName}/{blobName}?{sasToken}";
-            //string requestUri = $"https://wmdaattachmentstest.blob.core.windows.net/attachments/test.txt?sp=racwdli&st=2021-11-17T14:30:21Z&se=2021-11-17T22:30:21Z&spr=https&sv=2020-08-04&sr=c&sig=7ptE9sTVeYd4nzT01tD%2FNkgr50MX0xuz7SMZp4fLd1A%3D";
+            //string requestUri = $"https://{storageAccount}.blob.core.windows.net/{containerName}/{blobName}?{sasToken}";
+            string requestUri = attachmentTicket.AttachmentUploadUrl;
 
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(requestUri);
             request.Method = method;
@@ -912,15 +923,16 @@ namespace WmdaConnectCLI
 
         private static async Task DownloadAttachment(Guid attachmentGuid)
         {
-            string downloadLocation = $@"{attachmentGuid}_test.txt";
-            var downloadUrl = RequestDownloadUrl(attachmentGuid);
-            Console.WriteLine(downloadUrl);
+            
+            var downloadUrl = await GetAttachmentDownload(attachmentGuid, _accessToken);
+            string downloadLocation = $@"{attachmentGuid}_{downloadUrl.FileName}";
+            Console.WriteLine(downloadUrl.DownloadUrl);
             try
             {
 
                 using (var client = new WebClient())
                 {
-                   await client.DownloadFileTaskAsync(downloadUrl, $"{Path.Combine(Path.GetTempPath(), downloadLocation)}");
+                   await client.DownloadFileTaskAsync(downloadUrl.DownloadUrl, $"{Path.Combine(Path.GetTempPath(), downloadLocation)}");
                 }
 
                 Console.ForegroundColor = ConsoleColor.Green;
