@@ -796,8 +796,14 @@ namespace WmdaConnectCLI
 
             using (HttpWebResponse resp = (HttpWebResponse)request.GetResponse())
             {
-                if (resp.StatusCode == HttpStatusCode.OK)
-                { }
+                if (resp.StatusCode == HttpStatusCode.Created)
+                { 
+                    Console.WriteLine($"Blob uploaded: {contentLength:N0} bytes");
+                }
+                else
+                {
+                    throw new Exception(resp.StatusCode.ToString());
+                }
             }
         }
 
