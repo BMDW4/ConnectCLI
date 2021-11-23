@@ -963,17 +963,6 @@ namespace WmdaConnectCLI
             }
         }
 
-        private static Uri RequestDownloadUrl(Guid attachmentGuid)
-        {
-
-            var fileName = $@"{attachmentGuid}/test.txt";
-            var sasToken =
-                "sp=racwdli&st=2021-11-18T12:11:37Z&se=2021-11-18T20:11:37Z&spr=https&sv=2020-08-04&sr=c&sig=uLD%2Byb4htXR8vCHQlujM9a5gITdhkQMt5DyB40Ym%2BZ4%3D";
-            var sasUri = @$"https://wmdaattachmentstest.blob.core.windows.net/attachments/{fileName}?{sasToken}";
-
-            return new Uri(sasUri);
-        }
-
 
         // handle any errors when receiving messages
         private static Task ErrorHandler(ProcessErrorEventArgs args)
