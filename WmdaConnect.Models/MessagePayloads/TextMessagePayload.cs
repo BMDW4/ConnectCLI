@@ -1,8 +1,10 @@
-﻿using WmdaConnect.Models.IdTypes;
+﻿using System;
+using System.Collections.Generic;
+using WmdaConnect.Models.IdTypes;
 
 namespace WmdaConnect.Models.MessagePayloads
 {
-    public class TextMessagePayload
+    public class TextMessagePayload : IMayHaveAttachmentGuids
     {
         /// <summary>
         /// Patient identification P_ID Opt 17
@@ -19,5 +21,7 @@ namespace WmdaConnect.Models.MessagePayloads
         /// </summary>
         /// <remarks>Note that text over 1200 characters will be truncated if recipient is EMDIS</remarks>
         public string Text { get; set; }
+
+        public List<Guid> AttachmentGuids { get; set; }
     }
 }

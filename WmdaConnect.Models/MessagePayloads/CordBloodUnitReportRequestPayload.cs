@@ -1,11 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using WmdaConnect.Models.FieldDictionary;
 using WmdaConnect.Models.IdTypes;
 
 namespace WmdaConnect.Models.MessagePayloads
 {
     public class CordBloodUnitReportRequestPayload : IHasPatient, IHasCordBloodUnitId, IHasReferenceCode,
-        IHasEmailAddress, IHasFaxNumber, IHasAcknowledgementId
+        IHasEmailAddress, IHasFaxNumber, IHasAcknowledgementId, IMayHaveAttachmentGuids
     {
         [Required] public PatientId Patient { get; set; }
 
@@ -45,5 +47,10 @@ namespace WmdaConnect.Models.MessagePayloads
         [Required]
         [MaxLength(AcknowledgementIdField.MaxLength)]
         public string AcknowledgementId { get; set; }
+
+        /// <summary>
+        /// Attachment guids
+        /// </summary>
+        public List<Guid> AttachmentGuids { get; set; }
     }
 }
