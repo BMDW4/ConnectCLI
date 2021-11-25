@@ -8,6 +8,5 @@ namespace WmdaConnect.Models.MessageBases
         [Required]
         public T Payload { get; set; }
 
-        public List<System.Guid> AttachmentGuids { get; set; }
     }
 }

@@ -565,7 +565,7 @@ namespace WmdaConnectCLI
                         _textMessageRequest = JsonConvert.DeserializeObject<TextMessageRequest>(messageContent);
 
                     
-                        _textMessageRequest.AttachmentGuids.Add(attachmentTicket.AttachmentGuid);
+                        _textMessageRequest.Payload.AttachmentGuids.Add(attachmentTicket.AttachmentGuid);
                         if (opts.TargetRegistry is not null)
                             _textMessageRequest.Recipient = opts.TargetRegistry;
 
@@ -893,9 +893,9 @@ namespace WmdaConnectCLI
                         var pingMessage = JsonConvert.DeserializeObject<Ping>(body); //May need a refactor for using Message class type
                         var textMessage = JsonConvert.DeserializeObject<TextMessage>(body);
 
-                        if (textMessage.AttachmentGuids != null)
+                        if (textMessage.Payload.AttachmentGuids != null)
                         {
-                            foreach (var attachmentGuid in textMessage.AttachmentGuids)
+                            foreach (var attachmentGuid in textMessage.Payload.AttachmentGuids)
                             {
                                 await DownloadAttachment(attachmentGuid);
                             }
