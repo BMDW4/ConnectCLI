@@ -893,7 +893,7 @@ namespace WmdaConnectCLI
                         var pingMessage = JsonConvert.DeserializeObject<Ping>(body); //May need a refactor for using Message class type
                         var textMessage = JsonConvert.DeserializeObject<TextMessage>(body);
 
-                        if (textMessage.Payload.AttachmentGuids != null)
+                        if (textMessage.Payload?.AttachmentGuids != null)
                         {
                             foreach (var attachmentGuid in textMessage.Payload.AttachmentGuids)
                             {
