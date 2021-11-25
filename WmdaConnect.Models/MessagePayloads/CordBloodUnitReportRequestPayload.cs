@@ -7,7 +7,7 @@ using WmdaConnect.Models.IdTypes;
 namespace WmdaConnect.Models.MessagePayloads
 {
     public class CordBloodUnitReportRequestPayload : IHasPatient, IHasCordBloodUnitId, IHasReferenceCode,
-        IHasEmailAddress, IHasFaxNumber, IHasAcknowledgementId, IMayHaveAttachmentGuids
+        IHasEmailAddress, IHasFaxNumber, IHasAcknowledgementId, IHasAttachmentGuids
     {
         [Required] public PatientId Patient { get; set; }
 

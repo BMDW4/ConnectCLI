@@ -4,7 +4,7 @@ using WmdaConnect.Models.IdTypes;
 
 namespace WmdaConnect.Models.MessagePayloads
 {
-    public class TextMessagePayload : IMayHaveAttachmentGuids
+    public class TextMessagePayload : IHasAttachmentGuids
     {
         /// <summary>
         /// Patient identification P_ID Opt 17

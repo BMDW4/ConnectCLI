@@ -963,6 +963,11 @@ namespace WmdaConnectCLI
             }
         }
 
+        private static async Task UpdateDownloadedAtField()
+        {
+            throw new NotImplementedException();
+        }
+
 
         // handle any errors when receiving messages
         private static Task ErrorHandler(ProcessErrorEventArgs args)

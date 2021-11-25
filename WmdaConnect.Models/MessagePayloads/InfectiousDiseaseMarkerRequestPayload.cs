@@ -6,7 +6,7 @@ using WmdaConnect.Models.IdTypes;
 
 namespace WmdaConnect.Models.MessagePayloads
 {
-    public class InfectiousDiseaseMarkerRequestPayload : IHasPatient, IHasDonor, IHasRequestDate, IHasReferenceCode, IHasMarker, IHasInstitutionPaying, IHasAcknowledgementId, IHasRemark, IMayHaveAttachmentGuids
+    public class InfectiousDiseaseMarkerRequestPayload : IHasPatient, IHasDonor, IHasRequestDate, IHasReferenceCode, IHasMarker, IHasInstitutionPaying, IHasAcknowledgementId, IHasRemark, IHasAttachmentGuids
     {
         public PatientId Patient { get; set; }
         public DonorSelection Donor { get; set; }
