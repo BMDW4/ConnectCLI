@@ -485,7 +485,7 @@ namespace WmdaConnectCLI
             var azureFunctionAppClientId = _configuration["mdmApiClientId"];
             _urlRoot = _configuration["mdmApiUrlRoot"];
 
-            await DownloadAttachment(opts.AttachmentGuid);
+            await DownloadAttachment(opts.AttachmentGuid, opts.CorrelationGuid);
 
         }
 
@@ -761,7 +761,7 @@ namespace WmdaConnectCLI
             return attachmentTicket;
         }
 
-        private static async Task<AttachmentDownloadResponse> GetAttachmentDownload(Guid attachmentGuid, string accessToken)
+        private static async Task<AttachmentDownloadResponse> GetAttachmentDownload(Guid attachmentGuid, Guid correlationGuid, string accessToken)
         {
 
             var url = $"{_urlRoot}/AttachmentDownloadURL";
@@ -769,7 +769,8 @@ namespace WmdaConnectCLI
 
             var attachmentTicketRequest = new AttachmentDownloadRequest()
             {
-                AttachmentGuid = attachmentGuid
+                AttachmentGuid = attachmentGuid,
+                CorrelationGuid = correlationGuid
             };
 
             using var httpClient = new HttpClient();
@@ -785,6 +786,34 @@ namespace WmdaConnectCLI
             var attachmentTicket = JsonConvert.DeserializeObject<AttachmentDownloadResponse>(responseBody);
 
             return attachmentTicket;
+        }
+
+        private static async Task<AttachmentDownloadNotificationResponse> DownloadCompletedResponse(Guid attachmentGuid, Guid correlationGuid, string accessToken)
+        {
+
+            var url = $"{_urlRoot}/AttachmentDownloadedNotification";
+
+
+            var attachmentDownloadRequest = new AttachmentDownloadNotificationRequest()
+            {
+                AttachmentGuid = attachmentGuid,
+                CorrelationGuid = correlationGuid
+
+            };
+
+            using var httpClient = new HttpClient();
+
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+
+            var responseAttachmentDownload = await httpClient.PostAsJsonAsync(url, attachmentDownloadRequest);
+
+            responseAttachmentDownload.EnsureSuccessCodeReportBody();
+
+            var responseBody = await responseAttachmentDownload.Content.ReadAsStringAsync();
+
+            var attachmentDownloadResponse = JsonConvert.DeserializeObject<AttachmentDownloadNotificationResponse>(responseBody);
+
+            return attachmentDownloadResponse;
         }
 
         static void UploadFileToAzureBlobStorage(string attachmentPath, AttachmentTicketResponse attachmentTicket)
@@ -914,7 +943,7 @@ namespace WmdaConnectCLI
                         {
                             foreach (var attachmentGuid in cbuMessage.Payload.AttachmentGuids)
                             {
-                                await DownloadAttachment(attachmentGuid);
+                                await DownloadAttachment(attachmentGuid, cbuMessage.CorrelationGuid);
                             }
                         }
                         var url = $"{_urlRoot}/AckRequest";
@@ -944,10 +973,10 @@ namespace WmdaConnectCLI
             }
         }
 
-        private static async Task DownloadAttachment(Guid attachmentGuid)
+        private static async Task DownloadAttachment(Guid attachmentGuid, Guid correlationGuid)
         {
             
-            var downloadUrl = await GetAttachmentDownload(attachmentGuid, _accessToken);
+            var downloadUrl = await GetAttachmentDownload(attachmentGuid, correlationGuid, _accessToken);
             string downloadLocation = $@"{attachmentGuid}_{downloadUrl.FileName}";
             Console.WriteLine(downloadUrl.DownloadUrl);
             try
@@ -960,6 +989,7 @@ namespace WmdaConnectCLI
 
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine($"Downloaded {downloadLocation} to {Path.GetTempPath()}");
+                await DownloadCompletedResponse(attachmentGuid, correlationGuid, _accessToken);
                 Console.ResetColor();
             }
             catch (RequestFailedException e)
@@ -980,10 +1010,6 @@ namespace WmdaConnectCLI
             }
         }
 
-        private static async Task UpdateDownloadedAtField()
-        {
-            throw new NotImplementedException();
-        }
 
 
         // handle any errors when receiving messages
@@ -1147,6 +1173,9 @@ namespace WmdaConnectCLI
 
         [Option('g', "guid", Required = false, HelpText = "Attachment Guid")]
         public Guid AttachmentGuid { get; set; }
+
+        [Option('h', "corrGuid", Required = false, HelpText = "CorrelationGuid Guid")]
+        public Guid CorrelationGuid { get; set; }
     }
 
 }

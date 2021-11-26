@@ -7,6 +7,8 @@ namespace WmdaConnect.Models
         [Required]
         public System.Guid AttachmentGuid { get; set; }
 
+        [Required]
+        public System.Guid CorrelationGuid { get; set; }
     }
 
 }
