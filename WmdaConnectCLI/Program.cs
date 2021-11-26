@@ -575,10 +575,9 @@ namespace WmdaConnectCLI
                         {
                             var attachmentTicket = await GetAttachmentTicket(_accessToken, opts.Attachment);
 
-                            UploadFileToAzureBlobStorage(opts.Attachment, attachmentTicket);
+                            await UploadFileToAzureBlobStorage(opts.Attachment, attachmentTicket);
 
                             _cbuRequest = JsonConvert.DeserializeObject<CordBloodUnitReportResponse>(messageContent);
-
 
                             _cbuRequest.Payload.AttachmentGuids.Add(attachmentTicket.AttachmentGuid);
                             if (opts.TargetRegistry is not null)
@@ -700,20 +699,17 @@ namespace WmdaConnectCLI
                 Console.ResetColor();
                 Console.WriteLine();
 
-                var stopwatch = new Stopwatch();
+                var stopwatch = Stopwatch.StartNew();
 
-                while (_ackMessage == null)
+                while (_ackMessage == null && stopwatch.ElapsedMilliseconds < 10_000)
                 {
+                    await Task.Delay(500);
+                }
 
-                    stopwatch.Start();
-
-                    if (stopwatch.ElapsedMilliseconds >= 10000)
-                    {
-                        stopwatch.Stop();
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        throw new TimeoutException("Acknowledgement not received.");
-
-                    }
+                if (_ackMessage == null)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    throw new TimeoutException("Acknowledgement not received.");
                 }
 
                 Console.WriteLine("Stopping the receiver...");
@@ -722,7 +718,6 @@ namespace WmdaConnectCLI
 
                 Console.WriteLine("Stopped receiving messages");
             }
-
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
@@ -731,15 +726,12 @@ namespace WmdaConnectCLI
             {
                 Console.ResetColor();
             }
-
         }
-
 
         private static async Task<AttachmentTicketResponse> GetAttachmentTicket(string accessToken, string fileName)
         {
 
             var url = $"{_urlRoot}/AttachmentTicket";
-
 
             var attachmentTicketRequest = new AttachmentTicketRequest()
             {
@@ -788,12 +780,11 @@ namespace WmdaConnectCLI
             return attachmentTicket;
         }
 
-        private static async Task<AttachmentDownloadNotificationResponse> DownloadCompletedResponse(Guid attachmentGuid, Guid correlationGuid, string accessToken)
+        private static async Task NotifyAttachmentDownloaded(Guid attachmentGuid, Guid correlationGuid, string accessToken)
         {
 
             var url = $"{_urlRoot}/AttachmentDownloadedNotification";
-
-
+            
             var attachmentDownloadRequest = new AttachmentDownloadNotificationRequest()
             {
                 AttachmentGuid = attachmentGuid,
@@ -808,39 +799,33 @@ namespace WmdaConnectCLI
             var responseAttachmentDownload = await httpClient.PostAsJsonAsync(url, attachmentDownloadRequest);
 
             responseAttachmentDownload.EnsureSuccessCodeReportBody();
-
-            var responseBody = await responseAttachmentDownload.Content.ReadAsStringAsync();
-
-            var attachmentDownloadResponse = JsonConvert.DeserializeObject<AttachmentDownloadNotificationResponse>(responseBody);
-
-            return attachmentDownloadResponse;
         }
 
-        static void UploadFileToAzureBlobStorage(string attachmentPath, AttachmentTicketResponse attachmentTicket)
+        static async Task UploadFileToAzureBlobStorage(string attachmentPath, AttachmentTicketResponse attachmentTicket)
         {
 
             var uploadFileStream = File.ReadAllBytes(attachmentPath);
 
-            string method = "PUT";
-            string sampleContent = attachmentPath;
-            int contentLength = uploadFileStream.Length;
+            var method = "PUT";
+            var sampleContent = attachmentPath;
+            var contentLength = uploadFileStream.Length;
 
             //string requestUri = $"https://{storageAccount}.blob.core.windows.net/{containerName}/{blobName}?{sasToken}";
-            string requestUri = attachmentTicket.AttachmentUploadUrl;
+            var requestUri = attachmentTicket.AttachmentUploadUrl;
 
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(requestUri);
+            var request = (HttpWebRequest)WebRequest.Create(requestUri);
             request.Method = method;
             request.ContentType = "application/octet-stream";
             request.ContentLength = contentLength;
             request.Headers.Add("x-ms-blob-type", "BlockBlob");
 
             
-            using (Stream requestStream = request.GetRequestStream())
+            using (var requestStream = request.GetRequestStream())
             {
-                requestStream.Write(uploadFileStream, 0, uploadFileStream.Length);
+                await requestStream.WriteAsync(uploadFileStream, 0, uploadFileStream.Length);
             }
 
-            using (HttpWebResponse resp = (HttpWebResponse)request.GetResponse())
+            using (var resp = (HttpWebResponse)request.GetResponse())
             {
                 if (resp.StatusCode == HttpStatusCode.Created)
                 { 
@@ -977,11 +962,11 @@ namespace WmdaConnectCLI
         {
             
             var downloadUrl = await GetAttachmentDownload(attachmentGuid, correlationGuid, _accessToken);
-            string downloadLocation = $@"{attachmentGuid}_{downloadUrl.FileName}";
-            Console.WriteLine(downloadUrl.DownloadUrl);
+
+            var downloadLocation = $@"{attachmentGuid}_{downloadUrl.FileName}";
+            
             try
             {
-
                 using (var client = new WebClient())
                 {
                    await client.DownloadFileTaskAsync(downloadUrl.DownloadUrl, $"{Path.Combine(Path.GetTempPath(), downloadLocation)}");
@@ -989,8 +974,12 @@ namespace WmdaConnectCLI
 
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine($"Downloaded {downloadLocation} to {Path.GetTempPath()}");
-                await DownloadCompletedResponse(attachmentGuid, correlationGuid, _accessToken);
+                await NotifyAttachmentDownloaded(attachmentGuid, correlationGuid, _accessToken);
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.BackgroundColor = ConsoleColor.Green;
+                Console.Write("Download Notified.");
                 Console.ResetColor();
+                Console.WriteLine();
             }
             catch (RequestFailedException e)
             {

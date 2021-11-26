@@ -1,24 +1,8 @@
 {
   "profiles": {
-    "WmdaConnectCLI local ping": {
+    "WmdaConnectCLI": {
       "commandName": "Project",
-      "commandLineArgs": "message --clientId 13f0a70e-db40-4a9d-8251-112bf9996476 --ClientSecret 39d039aa-3ae4-4620-9b70-f1350ef93267 --env local --targetRegistry 0355 --File \"SampleMessages/CordBloodUnitReportResponse.json\" --attachments \"C:/Users/Omar/Documents/test.txt\" --messageType CordBloodUnitReportResponse"
-    },
-    "WmdaConnectCLI osc ping": {
-      "commandName": "Project",
-      "commandLineArgs": "listen --clientId 9ad178e5-cdca-40dc-8eee-cff7e7758f79 --ClientSecret aa440ca9-00df-445e-88c2-d16d984e628a --env stn7"
-    },
-    "WmdaConnectCLI stn new reg": {
-      "commandName": "Project",
-      "commandLineArgs": "newregistry --clientId 5ee798da-c967-428d-b6b6-0ca1d35320ce --clientSecret b_~5rqhtXFij56-r5LD240m.f~YbsvmndN --env stn --name 2345"
-    },
-    "WmdaConnectCLI 680b new reg": {
-      "commandName": "Project",
-      "commandLineArgs": "newregistry --clientId 0da971af-e846-4680-b447-f2e81db6a7b1 --clientSecret XXXXXXX --name 2345 --env 680b"
-    },
-    "WmdaConnectCLI osc": {
-      "commandName": "Project",
-      "commandLineArgs": "message --help"
+      "commandLineArgs": "message --clientId 13f0a70e-db40-4a9d-8251-112bf9996476 --ClientSecret 39d039aa-3ae4-4620-9b70-f1350ef93267 --env local --targetRegistry 0355 --File \"SampleMessages/CordBloodUnitReportResponse.json\" --attachments \"C:\\Users\\johng\\Downloads\\A_Buyer_s_Guide_to_Microsoft_Enterprise_Security.pdf\" --messageType CordBloodUnitReportResponse"
     }
   }
 }
