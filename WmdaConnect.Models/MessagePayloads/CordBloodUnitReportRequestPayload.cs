@@ -7,7 +7,7 @@ using WmdaConnect.Models.IdTypes;
 namespace WmdaConnect.Models.MessagePayloads
 {
     public class CordBloodUnitReportRequestPayload : IHasPatient, IHasCordBloodUnitId, IHasReferenceCode,
-        IHasEmailAddress, IHasFaxNumber, IHasAcknowledgementId, IHasAttachmentGuids
+        IHasEmailAddress, IHasFaxNumber, IHasAcknowledgementId
     {
         [Required] public PatientId Patient { get; set; }
 
@@ -48,9 +48,5 @@ namespace WmdaConnect.Models.MessagePayloads
         [MaxLength(AcknowledgementIdField.MaxLength)]
         public string AcknowledgementId { get; set; }
 
-        /// <summary>
-        /// Attachment guids
-        /// </summary>
-        public List<Guid> AttachmentGuids { get; set; }
     }
 }

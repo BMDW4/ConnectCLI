@@ -8,7 +8,7 @@ using WmdaConnect.Models.Shared;
 
 namespace WmdaConnect.Models.MessagePayloads
 {
-    public class SampleRequestPayload: IHasRequestDate, IHasRemark, IHasAttachmentGuids
+    public class SampleRequestPayload: IHasRequestDate, IHasRemark
     {
         [Required]
         public PatientId Patient { get; set; }
@@ -100,10 +100,6 @@ namespace WmdaConnect.Models.MessagePayloads
         /// </summary>
         public string Remark { get; set; }
 
-        /// <summary>
-        /// Attachment guids
-        /// </summary>
-        public List<Guid> AttachmentGuids { get; set; }
 
     }
 }

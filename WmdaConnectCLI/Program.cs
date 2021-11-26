@@ -36,6 +36,7 @@ namespace WmdaConnectCLI
         private static SampleArrivalRequest _sampleArrivalRequest;
         private static SampleResponseRequest _sampleResponseRequest;
         private static ConnectOptions _connect;
+        private static CordBloodUnitReportResponse _cbuRequest;
 
         private static async Task Main(string[] args)
         {
@@ -557,15 +558,8 @@ namespace WmdaConnectCLI
                 {
                     case MessageTypes.TextMessage:
                     {
-                        //Need to get download URL
-                        var attachmentTicket = await GetAttachmentTicket(_accessToken, opts.Attachment);
-
-                        UploadFileToAzureBlobStorage(opts.Attachment, attachmentTicket);
-                        
                         _textMessageRequest = JsonConvert.DeserializeObject<TextMessageRequest>(messageContent);
 
-                    
-                        _textMessageRequest.Payload.AttachmentGuids.Add(attachmentTicket.AttachmentGuid);
                         if (opts.TargetRegistry is not null)
                             _textMessageRequest.Recipient = opts.TargetRegistry;
 
@@ -574,6 +568,29 @@ namespace WmdaConnectCLI
                         url = $"{_urlRoot}/TextMessageRequest";
                         break;
                     }
+                    case MessageTypes.CordBloodUnitReportResponse:
+                    {
+                        //Need to get download URL
+                        if (opts.Attachment != null)
+                        {
+                            var attachmentTicket = await GetAttachmentTicket(_accessToken, opts.Attachment);
+
+                            UploadFileToAzureBlobStorage(opts.Attachment, attachmentTicket);
+
+                            _cbuRequest = JsonConvert.DeserializeObject<CordBloodUnitReportResponse>(messageContent);
+
+
+                            _cbuRequest.Payload.AttachmentGuids.Add(attachmentTicket.AttachmentGuid);
+                            if (opts.TargetRegistry is not null)
+                                _cbuRequest.Recipient = opts.TargetRegistry;
+
+                            contentToSend = JsonConvert.SerializeObject(_cbuRequest);
+
+                            url = $"{_urlRoot}/CordBloodUnitReportResponseRequest";
+                            
+                        }
+                        break;
+                        }
                     case MessageTypes.TypingRequest:
                     {
                         _typingRequestRequest = JsonConvert.DeserializeObject<TypingRequestRequest>(messageContent, new MultiFormatDateConverter());
@@ -856,7 +873,7 @@ namespace WmdaConnectCLI
                         if (ackMessage.CorrelationGuid != _pingRequest?.CorrelationGuid && ackMessage.CorrelationGuid != _textMessageRequest?.CorrelationGuid
                         && ackMessage.CorrelationGuid != _typingRequestRequest?.CorrelationGuid && ackMessage.CorrelationGuid != _typingResponseRequest?.CorrelationGuid
                         && ackMessage.CorrelationGuid != _sampleRequestRequest?.CorrelationGuid && ackMessage.CorrelationGuid != _sampleArrivalRequest?.CorrelationGuid
-                        && ackMessage.CorrelationGuid != _sampleResponseRequest?.CorrelationGuid)
+                        && ackMessage.CorrelationGuid != _sampleResponseRequest?.CorrelationGuid && ackMessage.CorrelationGuid != _cbuRequest?.CorrelationGuid)
                         {
 
                             Console.WriteLine(_pingRequest?.CorrelationGuid.ToString() ?? _textMessageRequest?.CorrelationGuid.ToString() ?? "NullCorrelationGuid");
@@ -891,11 +908,11 @@ namespace WmdaConnectCLI
                         Console.WriteLine();
 
                         var pingMessage = JsonConvert.DeserializeObject<Ping>(body); //May need a refactor for using Message class type
-                        var textMessage = JsonConvert.DeserializeObject<TextMessage>(body);
+                        var cbuMessage = JsonConvert.DeserializeObject<CordBloodUnitReportResponse>(body);
 
-                        if (textMessage.Payload?.AttachmentGuids != null)
+                        if (cbuMessage.Payload?.AttachmentGuids != null)
                         {
-                            foreach (var attachmentGuid in textMessage.Payload.AttachmentGuids)
+                            foreach (var attachmentGuid in cbuMessage.Payload.AttachmentGuids)
                             {
                                 await DownloadAttachment(attachmentGuid);
                             }

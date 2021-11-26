@@ -2,7 +2,7 @@
   "profiles": {
     "WmdaConnectCLI local ping": {
       "commandName": "Project",
-      "commandLineArgs": "message --clientId 13f0a70e-db40-4a9d-8251-112bf9996476 --ClientSecret 39d039aa-3ae4-4620-9b70-f1350ef93267 --env local --targetRegistry 0355 --File \"SampleMessages/TextMessage.json\" --attachments \"C:/Users/Omar/Documents/test.txt\" --messageType TextMessage"
+      "commandLineArgs": "message --clientId 13f0a70e-db40-4a9d-8251-112bf9996476 --ClientSecret 39d039aa-3ae4-4620-9b70-f1350ef93267 --env local --targetRegistry 0355 --File \"SampleMessages/CordBloodUnitReportResponse.json\" --attachments \"C:/Users/Omar/Documents/test.txt\" --messageType CordBloodUnitReportResponse"
     },
     "WmdaConnectCLI osc ping": {
       "commandName": "Project",
