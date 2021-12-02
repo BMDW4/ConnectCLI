@@ -4,9 +4,9 @@ cls
 @ECHO [2. that recipient registry (i.e. the listener) and the registry doing the sending correspond in the sample messages json]
 SET clientId=<clientId (Guid)>
 SET clientSecret=<clientSecret (Guid or complex text)>
-SET env_number=<env_number (integer value)>
+SET environment=<environment number (integer value)>
 
-wm listen --clientId %clientId% --clientSecret %clientSecret% --env %env_number%
+wm listen --clientId %clientId% --clientSecret %clientSecret% --environment %environment%
 
 @popd
 @pause

@@ -3,8 +3,11 @@ cls
 @ECHO [1. Remember to update the env, clientId and clientSecret]
 @ECHO [2. Check that the recipient key in the sample messages refers to a registry set up in your environment]
 @ECHO [3. run wm listen with clientId of recipient registry to simulate a recipient registry that will acknowledge the messages]
-REM Status: { "DisplayName": "", "ClientId": "9e940c2c-c5f2-455a-80bb-9efe9fc73c81", "ClientSecret": "c40bf7bb-a77c-450f-bd8e-1be0f9d279fa", "QueueName": "9998" }
-wm connect --clientId 9e940c2c-c5f2-455a-80bb-9efe9fc73c81 --ClientSecret c40bf7bb-a77c-450f-bd8e-1be0f9d279fa --env stn7
+SET clientId=<clientId (Guid)>
+SET clientSecret=<clientSecret (Guid or complex text)>
+SET environment=<environment number (integer value)>
+
+wm connect --clientId %clientId% --clientSecret %clientSecret% --environment %environment%
 @pause
 wm message --messageType TextMessage --file "./SampleMessages/TextMessage.json"
 @pause

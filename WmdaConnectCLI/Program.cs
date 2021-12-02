@@ -218,7 +218,7 @@ namespace WmdaConnectCLI
                 var app = ConfidentialClientApplicationBuilder.Create(clientId)
                     .WithClientSecret(clientSecret)
                     .WithTenantId(tenantId)
-                  //  .WithLogging(new LogCallback((a, b, _) => Console.WriteLine($"{a} {b}")))
+                    //  .WithLogging(new LogCallback((a, b, _) => Console.WriteLine($"{a} {b}")))
                     .Build();
 
                 var azureFunctionAppScope = $"{azureFunctionAppClientId}/.default";
@@ -332,7 +332,7 @@ namespace WmdaConnectCLI
             return registry;
         }
 
-       
+
 
         /* ----------------------------------------------------------------------------------------------------------- */
         /* ----------------------------------------------------------------------------------------------------------- */
@@ -515,7 +515,6 @@ namespace WmdaConnectCLI
 
             var messageType = opts.MessageType;
             var fileName = opts.File;
-            var attachment = opts.Attachment;
             try
             {
 
@@ -532,7 +531,6 @@ namespace WmdaConnectCLI
 
                 TokenCredential credential = new ClientSecretCredential(tenantId, clientId, clientSecret);
 
-
                 await using var client = new ServiceBusClient(fullyQualifiedNamespace, credential);
 
                 var registryDetails = await GetRegistryDetails(result1.AccessToken);
@@ -548,6 +546,7 @@ namespace WmdaConnectCLI
                 await processor.StartProcessingAsync();
 
                 var messageContent = await File.ReadAllTextAsync(fileName);
+
                 Console.WriteLine(messageContent);
 
                 string contentToSend = null;
@@ -557,113 +556,118 @@ namespace WmdaConnectCLI
                 switch (messageType)
                 {
                     case MessageTypes.TextMessage:
-                    {
-                        _textMessageRequest = JsonConvert.DeserializeObject<TextMessageRequest>(messageContent);
-
-                        if (opts.TargetRegistry is not null)
-                            _textMessageRequest.Recipient = opts.TargetRegistry;
-
-                        contentToSend = JsonConvert.SerializeObject(_textMessageRequest);
-
-                        url = $"{_urlRoot}/TextMessageRequest";
-                        break;
-                    }
-                    case MessageTypes.CordBloodUnitReportResponse:
-                    {
-                        //Need to get download URL
-                        if (opts.Attachment != null)
                         {
-                            var attachmentTicket = await GetAttachmentTicket(_accessToken, opts.Attachment);
+                            _textMessageRequest = JsonConvert.DeserializeObject<TextMessageRequest>(messageContent);
 
-                            await UploadFileToAzureBlobStorage(opts.Attachment, attachmentTicket);
+                            if (opts.TargetRegistry is not null)
+                                _textMessageRequest.Recipient = opts.TargetRegistry;
 
+                            contentToSend = JsonConvert.SerializeObject(_textMessageRequest);
+
+                            url = $"{_urlRoot}/TextMessageRequest";
+                            break;
+                        }
+                    case MessageTypes.CordBloodUnitReportResponse:
+                        {
                             _cbuRequest = JsonConvert.DeserializeObject<CordBloodUnitReportResponse>(messageContent);
 
-                            _cbuRequest.Payload.AttachmentGuids.Add(attachmentTicket.AttachmentGuid);
                             if (opts.TargetRegistry is not null)
+                            {
                                 _cbuRequest.Recipient = opts.TargetRegistry;
+                            }
+
+                            if (opts.Attachments != null)
+                            {
+                                foreach (var attachment in opts.Attachments.Split(','))
+                                {
+                                    var attachmentTicket = await GetAttachmentTicket(_accessToken, attachment);
+
+                                    await UploadFileToAzureBlobStorage(attachment, attachmentTicket);
+                                    
+                                    _cbuRequest.Payload.AttachmentGuids.Add(attachmentTicket.AttachmentGuid);
+                                }
+                            }
 
                             contentToSend = JsonConvert.SerializeObject(_cbuRequest);
 
                             url = $"{_urlRoot}/CordBloodUnitReportResponseRequest";
-                            
-                        }
-                        break;
+
+                            break;
                         }
                     case MessageTypes.TypingRequest:
-                    {
-                        _typingRequestRequest = JsonConvert.DeserializeObject<TypingRequestRequest>(messageContent, new MultiFormatDateConverter());
-                    
+                        {
+                            _typingRequestRequest = JsonConvert.DeserializeObject<TypingRequestRequest>(messageContent, new MultiFormatDateConverter());
 
-                        if (opts.TargetRegistry is not null)
-                            _typingRequestRequest.Recipient = opts.TargetRegistry;
 
-                        contentToSend = JsonConvert.SerializeObject(_typingRequestRequest);
+                            if (opts.TargetRegistry is not null)
+                                _typingRequestRequest.Recipient = opts.TargetRegistry;
 
-                        url = $"{_urlRoot}/TypingRequestRequest";
-                        break;
-                    }
+                            contentToSend = JsonConvert.SerializeObject(_typingRequestRequest);
+
+                            url = $"{_urlRoot}/TypingRequestRequest";
+                            break;
+                        }
                     case MessageTypes.TypingResponse:
-                    {
-                        _typingResponseRequest = JsonConvert.DeserializeObject<TypingResponseRequest>(messageContent);
+                        {
+                            _typingResponseRequest = JsonConvert.DeserializeObject<TypingResponseRequest>(messageContent);
 
-                        if (opts.TargetRegistry is not null)
-                            _typingResponseRequest.Recipient = opts.TargetRegistry;
+                            if (opts.TargetRegistry is not null)
+                                _typingResponseRequest.Recipient = opts.TargetRegistry;
 
-                        contentToSend = JsonConvert.SerializeObject(_typingResponseRequest);
+                            contentToSend = JsonConvert.SerializeObject(_typingResponseRequest);
 
-                        url = $"{_urlRoot}/TypingResponseRequest";
-                        break;
-                    }
+                            url = $"{_urlRoot}/TypingResponseRequest";
+                            break;
+                        }
                     case MessageTypes.SampleRequest:
-                    {
-                        _sampleRequestRequest = JsonConvert.DeserializeObject<SampleRequestRequest>(messageContent);
+                        {
+                            _sampleRequestRequest = JsonConvert.DeserializeObject<SampleRequestRequest>(messageContent);
 
-                        if (opts.TargetRegistry is not null)
-                            _sampleRequestRequest.Recipient = opts.TargetRegistry;
+                            if (opts.TargetRegistry is not null)
+                                _sampleRequestRequest.Recipient = opts.TargetRegistry;
 
-                        contentToSend = JsonConvert.SerializeObject(_sampleRequestRequest);
+                            contentToSend = JsonConvert.SerializeObject(_sampleRequestRequest);
 
 
-                        url = $"{_urlRoot}/SampleRequestRequest";
-                        break;
-                    }
+                            url = $"{_urlRoot}/SampleRequestRequest";
+                            break;
+                        }
                     case MessageTypes.SampleArrival:
-                    {
-                        _sampleArrivalRequest = JsonConvert.DeserializeObject<SampleArrivalRequest>(messageContent);
-                    
-                        if (opts.TargetRegistry is not null)
-                            _sampleArrivalRequest.Recipient = opts.TargetRegistry;
+                        {
+                            _sampleArrivalRequest = JsonConvert.DeserializeObject<SampleArrivalRequest>(messageContent);
 
-                        contentToSend = JsonConvert.SerializeObject(_sampleArrivalRequest);
+                            if (opts.TargetRegistry is not null)
+                                _sampleArrivalRequest.Recipient = opts.TargetRegistry;
 
-                        url = $"{_urlRoot}/SampleArrivalRequest";
-                        break;
-                    }
+                            contentToSend = JsonConvert.SerializeObject(_sampleArrivalRequest);
+
+                            url = $"{_urlRoot}/SampleArrivalRequest";
+                            break;
+                        }
                     case MessageTypes.SampleInfo:
-                    {
-                        var sampleInfoRequest = JsonConvert.DeserializeObject<SampleInfoRequest>(messageContent);
+                        {
+                            var sampleInfoRequest = JsonConvert.DeserializeObject<SampleInfoRequest>(messageContent);
 
-                        if (opts.TargetRegistry is not null)
-                            sampleInfoRequest.Recipient = opts.TargetRegistry;
+                            if (opts.TargetRegistry is not null)
+                                sampleInfoRequest.Recipient = opts.TargetRegistry;
 
-                        contentToSend = JsonConvert.SerializeObject(sampleInfoRequest);
+                            contentToSend = JsonConvert.SerializeObject(sampleInfoRequest);
 
-                        url = $"{_urlRoot}/SampleInfoRequest";
-                        break;
-                    }
+                            url = $"{_urlRoot}/SampleInfoRequest";
+                            break;
+                        }
                     case MessageTypes.SampleResponse:
-                    {
-                        _sampleResponseRequest = JsonConvert.DeserializeObject<SampleResponseRequest>(messageContent);
-                    
-                        if (opts.TargetRegistry is not null)
-                            _sampleResponseRequest.Recipient = opts.TargetRegistry;
+                        {
+                            _sampleResponseRequest = JsonConvert.DeserializeObject<SampleResponseRequest>(messageContent);
 
-                        contentToSend = JsonConvert.SerializeObject(_sampleResponseRequest);
+                            if (opts.TargetRegistry is not null)
+                                _sampleResponseRequest.Recipient = opts.TargetRegistry;
 
-                        url = $"{_urlRoot}/SampleResponseRequest";
-                        break;
-                    }
+                            contentToSend = JsonConvert.SerializeObject(_sampleResponseRequest);
+
+                            url = $"{_urlRoot}/SampleResponseRequest";
+                            break;
+                        }
                     case MessageTypes.Ping:
                     case MessageTypes.Ack:
                     default:
@@ -784,7 +788,7 @@ namespace WmdaConnectCLI
         {
 
             var url = $"{_urlRoot}/AttachmentDownloadedNotification";
-            
+
             var attachmentDownloadRequest = new AttachmentDownloadNotificationRequest()
             {
                 AttachmentGuid = attachmentGuid,
@@ -819,7 +823,7 @@ namespace WmdaConnectCLI
             request.ContentLength = contentLength;
             request.Headers.Add("x-ms-blob-type", "BlockBlob");
 
-            
+
             using (var requestStream = request.GetRequestStream())
             {
                 await requestStream.WriteAsync(uploadFileStream, 0, uploadFileStream.Length);
@@ -828,7 +832,7 @@ namespace WmdaConnectCLI
             using (var resp = (HttpWebResponse)request.GetResponse())
             {
                 if (resp.StatusCode == HttpStatusCode.Created)
-                { 
+                {
                     Console.WriteLine($"Blob uploaded: {contentLength:N0} bytes");
                 }
                 else
@@ -838,7 +842,7 @@ namespace WmdaConnectCLI
             }
         }
 
-    
+
 
         /* ----------------------------------------------------------------------------------------------------------- */
         /* ----------------------------------------------------------------------------------------------------------- */
@@ -960,16 +964,16 @@ namespace WmdaConnectCLI
 
         private static async Task DownloadAttachment(Guid attachmentGuid, Guid correlationGuid)
         {
-            
+
             var downloadUrl = await GetAttachmentDownload(attachmentGuid, correlationGuid, _accessToken);
 
             var downloadLocation = $@"{attachmentGuid}_{downloadUrl.FileName}";
-            
+
             try
             {
                 using (var client = new WebClient())
                 {
-                   await client.DownloadFileTaskAsync(downloadUrl.DownloadUrl, $"{Path.Combine(Path.GetTempPath(), downloadLocation)}");
+                    await client.DownloadFileTaskAsync(downloadUrl.DownloadUrl, $"{Path.Combine(Path.GetTempPath(), downloadLocation)}");
                 }
 
                 Console.ForegroundColor = ConsoleColor.Green;
@@ -1013,15 +1017,15 @@ namespace WmdaConnectCLI
 
         private sealed class MemoryConnectManager
         {
-            private static readonly string ConfigFilePath; 
+            private static readonly string ConfigFilePath;
 
             static MemoryConnectManager()
             {
                 var envHome = Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");
                 if (!Directory.Exists(envHome + @"/.wm"))
                     Directory.CreateDirectory(envHome + @"/.wm");
-                
-                ConfigFilePath =  $@"{envHome}/.wm/connectInfo.txt";
+
+                ConfigFilePath = $@"{envHome}/.wm/connectInfo.txt";
             }
 
             public static void SetValue(ConnectOptions value)
@@ -1035,7 +1039,7 @@ namespace WmdaConnectCLI
                 if (!File.Exists(ConfigFilePath)) return null;
 
                 var jsonString = File.ReadAllText(ConfigFilePath);
-                
+
                 return System.Text.Json.JsonSerializer.Deserialize<ConnectOptions>(jsonString);
             }
         }
@@ -1050,7 +1054,7 @@ namespace WmdaConnectCLI
         [Option('s', "clientSecret", Required = true, HelpText = "Your Client Secret")]
         public string ClientSecret { get; set; }
 
-        [Option('e', "env", Required = true, HelpText = "Environment")]
+        [Option('e', "environment", Required = true, HelpText = "Environment")]
         public string Environment { get; set; }
 
         [Option('w', "show", Required = false, HelpText = "Prints token to console")]
@@ -1143,9 +1147,8 @@ namespace WmdaConnectCLI
         [Option('t', "targetRegistry", Required = false, HelpText = "Target Registry")]
         public string TargetRegistry { get; set; }
 
-        [Option('a', "attachments", Required = false, HelpText = "File attachments")]
-        public string Attachment { get; set; }
-        //TODO Use comma seperated attachments
+        [Option('a', "attachments", Required = false, HelpText = "File attachments (comma delimited for multiple)")]
+        public string Attachments { get; set; }
     }
 
     [Verb("download", HelpText = "Download any incoming attachments")]
@@ -1166,5 +1169,4 @@ namespace WmdaConnectCLI
         [Option('h', "corrGuid", Required = false, HelpText = "CorrelationGuid Guid")]
         public Guid CorrelationGuid { get; set; }
     }
-
 }
