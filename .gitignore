@@ -392,5 +392,5 @@ FodyWeavers.xsd
 
 # Don't want appsettings.json to go in here because will be different for different environments
 appsettings.json
-!Properties/appsettings.json
+!**/Properties/appsettings.json
 appsettings.*.json
