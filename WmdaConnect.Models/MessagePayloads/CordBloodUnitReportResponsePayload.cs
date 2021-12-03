@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 using WmdaConnect.Models.FieldDictionary;
 using WmdaConnect.Models.IdTypes;
 
@@ -10,6 +11,7 @@ namespace WmdaConnect.Models.MessagePayloads
     {
         [Required] public PatientId Patient { get; set; }
 
+        [JsonProperty("cbu")]
         [Required] public CordBloodUnitId CordBloodUnit { get; set; }
 
         /// <summary>
@@ -19,10 +21,9 @@ namespace WmdaConnect.Models.MessagePayloads
         [MaxLength(ReferenceCodeField.MaxLength)]
         public string ReferenceCode { get; set; }
 
-
         /// <summary>
         /// Attachment guids
         /// </summary>
-        public List<Guid> AttachmentGuids { get; set; }
+        public List<Guid> AttachmentGuids { get; set; } = new();
     }
 }
