@@ -15,8 +15,6 @@
         "id": "string"
       }
     },
-    "text": "string",
-    "attachmentGuids": [
-    ]
+    "text": "string"
   }
 }

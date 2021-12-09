@@ -22,6 +22,7 @@
         MessageDenial,
         ResultReminder,
         CordBloodUnitReportRequest,
+        CordBloodUnitReportResponse,
         InfectiousDiseaseMarkerRequest,
         InfectiousDiseaseMarkerResult,
         ReservationRequest,

@@ -20,7 +20,5 @@
     "expirationDate": "2021-09-20T14:51:02.642Z",
     "remark": "string"
   },
-  "recipient": "9999",
-  "correlationGuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "messageType": "Ping"
+  "recipient": "9999"
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using WmdaConnect.Models.FieldDictionary;
 using WmdaConnect.Models.IdTypes;
@@ -8,7 +7,7 @@ using WmdaConnect.Models.Shared;
 
 namespace WmdaConnect.Models.MessagePayloads
 {
-    public class SampleRequestPayload: IHasRequestDate, IHasRemark, IMayHaveAttachmentGuids
+    public class SampleRequestPayload: IHasRequestDate, IHasRemark
     {
         [Required]
         public PatientId Patient { get; set; }
@@ -100,10 +99,6 @@ namespace WmdaConnect.Models.MessagePayloads
         /// </summary>
         public string Remark { get; set; }
 
-        /// <summary>
-        /// Attachment guids
-        /// </summary>
-        public List<Guid> AttachmentGuids { get; set; }
 
     }
 }

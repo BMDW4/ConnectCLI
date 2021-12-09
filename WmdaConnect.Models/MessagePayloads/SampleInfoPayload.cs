@@ -1,8 +1,6 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using WmdaConnect.Models.FieldDictionary;
 using WmdaConnect.Models.IdTypes;
-using WmdaConnect.Models.Shared;
 
 namespace WmdaConnect.Models.MessagePayloads
 {

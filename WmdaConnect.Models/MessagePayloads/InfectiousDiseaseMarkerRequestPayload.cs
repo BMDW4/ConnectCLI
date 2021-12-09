@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using WmdaConnect.Models.FieldDictionary;
 using WmdaConnect.Models.IdTypes;
 
 namespace WmdaConnect.Models.MessagePayloads
 {
-    public class InfectiousDiseaseMarkerRequestPayload : IHasPatient, IHasDonor, IHasRequestDate, IHasReferenceCode, IHasMarker, IHasInstitutionPaying, IHasAcknowledgementId, IHasRemark, IMayHaveAttachmentGuids
+    public class InfectiousDiseaseMarkerRequestPayload : IHasPatient, IHasDonor, IHasRequestDate, IHasReferenceCode, IHasMarker, IHasInstitutionPaying, IHasAcknowledgementId, IHasRemark
     {
         public PatientId Patient { get; set; }
         public DonorSelection Donor { get; set; }
@@ -52,9 +51,5 @@ namespace WmdaConnect.Models.MessagePayloads
         [MaxLength(RemarkField.MaxLength)]
         public string Remark { get; set; }
 
-        /// <summary>
-        /// Attachment guids
-        /// </summary>
-        public List<Guid> AttachmentGuids { get; set; }
     }
 }

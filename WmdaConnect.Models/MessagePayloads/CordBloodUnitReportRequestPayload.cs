@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 using WmdaConnect.Models.FieldDictionary;
 using WmdaConnect.Models.IdTypes;
 
 namespace WmdaConnect.Models.MessagePayloads
 {
     public class CordBloodUnitReportRequestPayload : IHasPatient, IHasCordBloodUnitId, IHasReferenceCode,
-        IHasEmailAddress, IHasFaxNumber, IHasAcknowledgementId, IMayHaveAttachmentGuids
+        IHasEmailAddress, IHasFaxNumber, IHasAcknowledgementId
     {
         [Required] public PatientId Patient { get; set; }
 
+        [JsonProperty("cbu")]
         [Required] public CordBloodUnitId CordBloodUnit { get; set; }
 
         /// <summary>
@@ -48,9 +48,5 @@ namespace WmdaConnect.Models.MessagePayloads
         [MaxLength(AcknowledgementIdField.MaxLength)]
         public string AcknowledgementId { get; set; }
 
-        /// <summary>
-        /// Attachment guids
-        /// </summary>
-        public List<Guid> AttachmentGuids { get; set; }
     }
 }

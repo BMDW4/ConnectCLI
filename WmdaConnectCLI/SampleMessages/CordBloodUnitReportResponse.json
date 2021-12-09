@@ -21,11 +21,10 @@
     "PreferredSendingMethod": "1",
     "referenceCode": "string",
     "expirationDate": "2021-10-05T10:08:17.569Z",
-    "acknowledgementId": "string",
-    "remark": "string",
-    "faxNumber": "1234567890",
-    "emailAddress": "test@test.test",
-    "cordBloodUnit": "123"
+    "cordBloodUnit": "123",
+    "attachmentGuids": [
+
+    ]
   },
   "recipient": "9999"
 }
