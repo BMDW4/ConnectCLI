@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using WmdaConnect.Models.FieldDictionary;
 using WmdaConnect.Models.IdTypes;

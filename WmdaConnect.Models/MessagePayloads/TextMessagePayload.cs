@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using WmdaConnect.Models.IdTypes;
+﻿using WmdaConnect.Models.IdTypes;
 
 namespace WmdaConnect.Models.MessagePayloads
 {

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace WmdaConnect.Models
+﻿namespace WmdaConnect.Models
 {
     public class RegistryDetailsRequestModel
     {
