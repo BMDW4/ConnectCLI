@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using WmdaConnect.Models.FieldDictionary;
 using WmdaConnect.Models.IdTypes;
+using WmdaConnect.Models.Shared;
 
 namespace WmdaConnect.Models.MessagePayloads
 {
@@ -18,6 +19,11 @@ namespace WmdaConnect.Models.MessagePayloads
         /// Date of acknowledgment ACK_DATE Opt 8 yyyy-MM-dd [or yyyyMMdd]
         /// </summary>
         public DateTime? AcknowledgementDate { get; set; }
+
+        /// <summary>
+        /// EMDIS format date of Acknowledgement Date ACK_DATE Req 8 yyyy-MM-dd [or yyyyMMdd]
+        /// </summary>
+        public string AcknowledgementDateEmdis => AcknowledgementDate?.ToEmdis();
 
         /// <summary>
         /// Remark REMARK Opt 120

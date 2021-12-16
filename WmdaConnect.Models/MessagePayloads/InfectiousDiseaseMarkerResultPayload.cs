@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using WmdaConnect.Models.FieldDictionary;
 using WmdaConnect.Models.IdTypes;
 using WmdaConnect.Models.OtherTypes;
+using WmdaConnect.Models.Shared;
 
 namespace WmdaConnect.Models.MessagePayloads 
 {
@@ -33,6 +34,12 @@ namespace WmdaConnect.Models.MessagePayloads
         /// Date of sample extraction D_EXTR_DATE Opt 8
         /// </summary>
         public DateTime? SampleExtractionDate { get; set; }
+
+
+        /// <summary>
+        /// EMDIS format date of sample extratction D_EXTR_DATE Opt 8 yyyy-MM-dd [or yyyyMMdd]
+        /// </summary>
+        public string SampleExtractionDateEmdis => SampleExtractionDate?.ToEmdis();
 
         /// <summary>
         /// Donor blood group D_ABO Opt 2
