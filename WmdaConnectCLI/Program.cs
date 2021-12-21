@@ -5,6 +5,7 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Azure;
@@ -74,7 +75,7 @@ namespace WmdaConnectCLI
         {
             IConfigurationRoot _configuration;
             var builder = new ConfigurationBuilder()
-                .SetBasePath(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location))
+                .SetBasePath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))
                 .AddJsonFile($"appsettings.{opts.Environment}.json", optional: false, reloadOnChange: true);
 
             _configuration = builder.Build();
@@ -130,7 +131,7 @@ namespace WmdaConnectCLI
         {
             IConfigurationRoot _configuration;
             var builder = new ConfigurationBuilder()
-                .SetBasePath(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location))
+                .SetBasePath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))
                 .AddJsonFile($"appsettings.{opts.Environment ?? _connect.Environment}.json", optional: false, reloadOnChange: true);
 
             _configuration = builder.Build();
@@ -200,7 +201,7 @@ namespace WmdaConnectCLI
             IConfigurationRoot _configuration;
 
             var builder = new ConfigurationBuilder()
-                .SetBasePath(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location))
+                .SetBasePath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))
                 .AddJsonFile($"appsettings.{opts.Environment ?? _connect.Environment}.json", optional: false, reloadOnChange: true);
 
             _configuration = builder.Build();
@@ -342,21 +343,20 @@ namespace WmdaConnectCLI
 
         public static async Task RunNewRegistryOptions(NewRegistryOptions opts)
         {
-            IConfigurationRoot _configuration;
             var builder = new ConfigurationBuilder()
-                .SetBasePath(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location))
+                .SetBasePath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))
                 .AddJsonFile($"appsettings.{opts.Environment ?? _connect.Environment}.json", optional: false, reloadOnChange: true);
 
-            _configuration = builder.Build();
+            var configuration = builder.Build();
 
-            var tenantId = _configuration["tenantId"];
+            var tenantId = configuration["tenantId"];
             var clientId = opts.ClientId ?? _connect.ClientId;
             var clientSecret = opts.ClientSecret ?? _connect.ClientSecret;
 
             var useAzApiEndpoint = opts.AzApiEndpoint;
-            var azureFunctionAppClientId = _configuration["mdmApiClientId"];
-            _urlRoot = _configuration["mdmApiUrlRoot"];
-            var azApiUrl = _configuration["azApiUrl"];
+            var azureFunctionAppClientId = configuration["mdmApiClientId"];
+            _urlRoot = configuration["mdmApiUrlRoot"];
+            var azApiUrl = configuration["azApiUrl"];
 
             try
             {
@@ -414,7 +414,7 @@ namespace WmdaConnectCLI
         {
             IConfigurationRoot _configuration;
             var builder = new ConfigurationBuilder()
-                .SetBasePath(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location))
+                .SetBasePath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))
                 .AddJsonFile($"appsettings.{opts.Environment ?? _connect.Environment}.json", optional: false, reloadOnChange: true);
 
             _configuration = builder.Build();
@@ -474,7 +474,7 @@ namespace WmdaConnectCLI
         {
             IConfigurationRoot _configuration;
             var builder = new ConfigurationBuilder()
-                .SetBasePath(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location))
+                .SetBasePath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))
                 .AddJsonFile($"appsettings.{opts.Environment ?? _connect.Environment}.json", optional: false, reloadOnChange: true);
 
             _configuration = builder.Build();
@@ -499,7 +499,7 @@ namespace WmdaConnectCLI
         {
             IConfigurationRoot _configuration;
             var builder = new ConfigurationBuilder()
-                .SetBasePath(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location))
+                .SetBasePath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))
                 .AddJsonFile($"appsettings.{opts.Environment ?? _connect.Environment}.json", optional: false, reloadOnChange: true);
 
             _configuration = builder.Build();
@@ -549,9 +549,9 @@ namespace WmdaConnectCLI
 
                 Console.WriteLine(messageContent);
 
-                string contentToSend = null;
+                string contentToSend;
 
-                var url = "";
+                string url;
 
                 switch (messageType)
                 {
@@ -583,7 +583,7 @@ namespace WmdaConnectCLI
                                     var attachmentTicket = await GetAttachmentTicket(_accessToken, attachment);
 
                                     await UploadFileToAzureBlobStorage(attachment, attachmentTicket);
-                                    
+
                                     _cbuRequest.Payload.AttachmentGuids.Add(attachmentTicket.AttachmentGuid);
                                 }
                             }
@@ -805,40 +805,34 @@ namespace WmdaConnectCLI
             responseAttachmentDownload.EnsureSuccessCodeReportBody();
         }
 
-        static async Task UploadFileToAzureBlobStorage(string attachmentPath, AttachmentTicketResponse attachmentTicket)
+        private static async Task UploadFileToAzureBlobStorage(string attachmentPath, AttachmentTicketResponse attachmentTicket)
         {
+            var uploadFileStream = await File.ReadAllBytesAsync(attachmentPath);
 
-            var uploadFileStream = File.ReadAllBytes(attachmentPath);
-
-            var method = "PUT";
-            var sampleContent = attachmentPath;
             var contentLength = uploadFileStream.Length;
 
-            //string requestUri = $"https://{storageAccount}.blob.core.windows.net/{containerName}/{blobName}?{sasToken}";
             var requestUri = attachmentTicket.AttachmentUploadUrl;
 
             var request = (HttpWebRequest)WebRequest.Create(requestUri);
-            request.Method = method;
+            request.Method = "PUT";
             request.ContentType = "application/octet-stream";
             request.ContentLength = contentLength;
             request.Headers.Add("x-ms-blob-type", "BlockBlob");
 
-
-            using (var requestStream = request.GetRequestStream())
+            await using (var requestStream = request.GetRequestStream())
             {
                 await requestStream.WriteAsync(uploadFileStream, 0, uploadFileStream.Length);
             }
 
-            using (var resp = (HttpWebResponse)request.GetResponse())
+            using var resp = (HttpWebResponse)request.GetResponse();
+
+            if (resp.StatusCode == HttpStatusCode.Created)
             {
-                if (resp.StatusCode == HttpStatusCode.Created)
-                {
-                    Console.WriteLine($"Blob uploaded: {contentLength:N0} bytes");
-                }
-                else
-                {
-                    throw new Exception(resp.StatusCode.ToString());
-                }
+                Console.WriteLine($"Blob uploaded: {contentLength:N0} bytes");
+            }
+            else
+            {
+                throw new Exception(resp.StatusCode.ToString());
             }
         }
 
