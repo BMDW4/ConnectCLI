@@ -44,7 +44,6 @@ namespace WmdaConnect.Models.MessagePayloads
         /// <summary>
         /// Acknowledgement ID ACK_ID Opt 17
         /// </summary>
-        [Required]
         [MaxLength(AcknowledgementIdField.MaxLength)]
         public string AcknowledgementId { get; set; }
 

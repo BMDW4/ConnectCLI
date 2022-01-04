@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 
 namespace WmdaConnect.Models.IdTypes;
 
+//Attributes here have no effect on swagger, for reference only and ease of copy/paste
 public interface IHasDonorAltStatus
 {
     /// <summary>

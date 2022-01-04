@@ -32,7 +32,7 @@ namespace WmdaConnect.Models.MessagePayloads
         /// Reason REASON Req 3
         /// </summary>
         [Required]
-        [MinLength(3)]
+        [MinLength(2)]
         [MaxLength(3)]
         public string Reason { get; set; }
 

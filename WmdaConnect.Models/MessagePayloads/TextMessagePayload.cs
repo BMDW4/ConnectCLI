@@ -1,4 +1,5 @@
-﻿using WmdaConnect.Models.IdTypes;
+﻿using System;
+using WmdaConnect.Models.IdTypes;
 
 namespace WmdaConnect.Models.MessagePayloads
 {
@@ -20,5 +21,9 @@ namespace WmdaConnect.Models.MessagePayloads
         /// <remarks>Note that text over 1200 characters will be truncated if recipient is EMDIS</remarks>
         public string Text { get; set; }
 
+        /// <summary>
+        /// Date sent SENT_DATE Opt 8
+        /// </summary>
+        public DateTime SentDate { get; set; }
     }
 }
