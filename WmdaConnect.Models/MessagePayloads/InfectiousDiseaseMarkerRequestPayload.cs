@@ -17,7 +17,7 @@ namespace WmdaConnect.Models.MessagePayloads
         [Required]
         [Range(typeof(DateTime), "02-Jan-0001", "31-Dec-9999", ErrorMessage = "Required, yyyy-MM-dd [or yyyyMMdd]")]
         public DateTime RequestDate { get; set; }
-
+        
         /// <summary>
         /// EMDIS format date of Request Date REQ_DATE Req 8 yyyy-MM-dd [or yyyyMMdd]
         /// </summary>

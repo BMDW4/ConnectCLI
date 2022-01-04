@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 using WmdaConnect.Models.FieldDictionary;
 using WmdaConnect.Models.IdTypes;
 using WmdaConnect.Models.OtherTypes;
@@ -7,7 +8,7 @@ using WmdaConnect.Models.Shared;
 
 namespace WmdaConnect.Models.MessagePayloads
 {
-    public class SampleResponsePayload
+    public class SampleResponsePayload : IHasDonorAltStatus
     {
         [Required]
         public PatientId Patient { get; set; }
@@ -123,7 +124,9 @@ namespace WmdaConnect.Models.MessagePayloads
         /// <summary>
         /// Donor ALT status D_ALT Opt 3
         /// </summary>
-        public string Alt { get; set; }
+        [Range(0, 999)]
+        [JsonProperty("alt")]
+        public int? DonorAltStatus { get; set; }
 
         /// <summary>
         /// Donor antibody to HTLV1.V2 D_ANTI_HTLV Opt 1

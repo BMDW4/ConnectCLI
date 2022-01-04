@@ -1,13 +1,14 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
+using WmdaConnect.Models.IdTypes;
 
 namespace WmdaConnect.Models.OtherTypes
 {
     /// <summary>
     /// HLA Node with DNA 
     /// </summary>
-    public class InfectiousDiseaseMarkers
+    public class InfectiousDiseaseMarkers : IHasDonorAltStatus
     {
         /// <summary>
         /// Donor CMV antibody status D_ANTI_CMV Opt 1
@@ -171,9 +172,9 @@ namespace WmdaConnect.Models.OtherTypes
         /// <summary>
         /// Donor ALT status D_ALT Opt 3
         /// </summary>
-        [MaxLength(3)]
+        [Range(0, 999)]
         [JsonProperty("alt")]
-        public string DonorAltStatus { get; set; }
+        public int? DonorAltStatus { get; set; }
     }
 
 
