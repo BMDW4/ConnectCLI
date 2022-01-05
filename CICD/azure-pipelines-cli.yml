@@ -9,7 +9,7 @@ trigger:
 #  - template: templates/variables.yml
 
 pool:
-  vmImage: 'windows-latest'
+  vmImage: 'windows-2022'
 
 stages:
  - stage: Build
