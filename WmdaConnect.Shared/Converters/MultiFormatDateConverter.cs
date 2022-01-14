@@ -14,14 +14,14 @@ namespace WmdaConnect.Shared.Converters
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            var val = IsNullableType(objectType);
-            if (reader.TokenType == JsonToken.Null && !val)
+            var isNullableType = IsNullableType(objectType);
+            if (reader.TokenType == JsonToken.Null && !isNullableType)
             {
                 throw new JsonSerializationException(
                     string.Format(CultureInfo.InvariantCulture, "Cannot convert null value to {0}.", objectType));
             }
 
-            var underlyingObjectType = val ? Nullable.GetUnderlyingType(objectType)! : objectType;
+            var underlyingObjectType = isNullableType ? Nullable.GetUnderlyingType(objectType)! : objectType;
             if (reader.TokenType == JsonToken.Date)
             {
                 if (underlyingObjectType == typeof(DateTimeOffset))
@@ -39,7 +39,7 @@ namespace WmdaConnect.Shared.Converters
                 return reader.Value;
             }
 
-            if (reader.TokenType != JsonToken.String)
+            if (reader.TokenType != JsonToken.String && reader.TokenType != JsonToken.Null)
             {
                 var errorMessage = string.Format(
                     CultureInfo.InvariantCulture,
