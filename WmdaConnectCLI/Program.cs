@@ -36,8 +36,9 @@ namespace WmdaConnectCLI
         private static SampleRequestRequest _sampleRequestRequest;
         private static SampleArrivalRequest _sampleArrivalRequest;
         private static SampleResponseRequest _sampleResponseRequest;
-        private static ConnectOptions _connect;
         private static CordBloodUnitReportResponse _cbuRequest;
+        private static MessageRequest _messageRequest;
+        private static ConnectOptions _connect;
 
         private static async Task Main(string[] args)
         {
@@ -50,7 +51,6 @@ namespace WmdaConnectCLI
             });
 
             _connect = MemoryConnectManager.GetValue();
-
 
             await parser
                 .ParseArguments<ConnectOptions, PingOptions, ListenOptions, NewRegistryOptions, RemoveRegistryOptions, MessageOptions, DownloadOptions>(args)
@@ -497,27 +497,24 @@ namespace WmdaConnectCLI
 
         public static async Task RunMessage(MessageOptions opts)
         {
-            IConfigurationRoot _configuration;
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))
                 .AddJsonFile($"appsettings.{opts.Environment ?? _connect.Environment}.json", optional: false, reloadOnChange: true);
 
-            _configuration = builder.Build();
+            var configuration = builder.Build();
 
-
-            var tenantId = _configuration["tenantId"];
+            var tenantId = configuration["tenantId"];
             var clientId = opts.ClientId ?? _connect.ClientId;
             var clientSecret = opts.ClientSecret ?? _connect.ClientSecret;
-            var fullyQualifiedNamespace = _configuration["ServiceBusNamespace"];
-            var azureFunctionAppClientId = _configuration["azureFunctionAppClientId"];
-            _urlRoot = _configuration["urlRoot"];
+            var fullyQualifiedNamespace = configuration["ServiceBusNamespace"];
+            var azureFunctionAppClientId = configuration["azureFunctionAppClientId"];
+            _urlRoot = configuration["urlRoot"];
 
 
             var messageType = opts.MessageType;
             var fileName = opts.File;
             try
             {
-
                 var app = ConfidentialClientApplicationBuilder.Create(clientId)
                     .WithClientSecret(clientSecret)
                     .WithTenantId(tenantId)
@@ -668,6 +665,36 @@ namespace WmdaConnectCLI
                             url = $"{_urlRoot}/SampleResponseRequest";
                             break;
                         }
+                    case MessageTypes.Warning:
+                    case MessageTypes.RequestCancellation:
+                    case MessageTypes.NoResult:
+                    case MessageTypes.MessageAcknowledgement:
+                    case MessageTypes.MessageDenial:
+                    case MessageTypes.ResultReminder:
+                    case MessageTypes.CordBloodUnitReportRequest:
+                    case MessageTypes.InfectiousDiseaseMarkerRequest:
+                    case MessageTypes.InfectiousDiseaseMarkerResult:
+                    case MessageTypes.ReservationRequest:
+                    case MessageTypes.ReservationResult:
+                        {
+                            //TODO: all messages should be handled in this case block rather than case block per messageType
+                            //it's not completely trivial to do because of the special handling for messages with exceptions
+                            //but it won't be too hard either
+
+                            _messageRequest = GetMessageRequest(messageType, messageContent);
+
+                            if (opts.TargetRegistry is not null)
+                                _messageRequest.Recipient = opts.TargetRegistry;
+
+                            contentToSend = JsonConvert.SerializeObject(_messageRequest, Formatting.Indented, new StringEnumConverter());
+
+                            Console.ForegroundColor = ConsoleColor.DarkYellow;
+                            Console.WriteLine(contentToSend);
+                            Console.ResetColor();
+
+                            url = $"{_urlRoot}/{messageType}Request";
+                            break;
+                        }
                     case MessageTypes.Ping:
                     case MessageTypes.Ack:
                     default:
@@ -730,6 +757,44 @@ namespace WmdaConnectCLI
             {
                 Console.ResetColor();
             }
+        }
+
+        private static MessageRequest GetMessageRequest(MessageTypes messageType, string messageContent)
+        {
+            return messageType switch
+            {
+                MessageTypes.Ping => JsonConvert.DeserializeObject<PingRequest>(messageContent),
+                MessageTypes.Ack => JsonConvert.DeserializeObject<AckRequest>(messageContent),
+                MessageTypes.TypingRequest => JsonConvert.DeserializeObject<TypingRequestRequest>(messageContent),
+                MessageTypes.TypingResponse => JsonConvert.DeserializeObject<TypingResponseRequest>(messageContent),
+                MessageTypes.SampleRequest => JsonConvert.DeserializeObject<SampleRequestRequest>(messageContent),
+                MessageTypes.SampleArrival => JsonConvert.DeserializeObject<SampleArrivalRequest>(messageContent),
+                MessageTypes.SampleResponse => JsonConvert.DeserializeObject<SampleResponseRequest>(messageContent),
+                MessageTypes.SampleInfo => JsonConvert.DeserializeObject<SampleInfoRequest>(messageContent),
+                MessageTypes.TextMessage => JsonConvert.DeserializeObject<TextMessageRequest>(messageContent),
+                MessageTypes.Warning => JsonConvert.DeserializeObject<WarningRequest>(messageContent),
+                MessageTypes.RequestCancellation => JsonConvert.DeserializeObject<RequestCancellationRequest>(
+                    messageContent),
+                MessageTypes.NoResult => JsonConvert.DeserializeObject<NoResultRequest>(messageContent),
+                MessageTypes.MessageAcknowledgement => JsonConvert.DeserializeObject<MessageAcknowledgementRequest>(
+                    messageContent),
+                MessageTypes.MessageDenial => JsonConvert.DeserializeObject<MessageDenialRequest>(messageContent),
+                MessageTypes.ResultReminder => JsonConvert.DeserializeObject<ResultReminderRequest>(messageContent),
+                MessageTypes.CordBloodUnitReportRequest => JsonConvert
+                    .DeserializeObject<CordBloodUnitReportRequestRequest>(messageContent),
+                MessageTypes.CordBloodUnitReportResponse => JsonConvert
+                    .DeserializeObject<CordBloodUnitReportResponseRequest>(messageContent),
+                MessageTypes.InfectiousDiseaseMarkerRequest => JsonConvert
+                    .DeserializeObject<InfectiousDiseaseMarkerRequestRequest>(messageContent),
+                MessageTypes.InfectiousDiseaseMarkerResult => JsonConvert
+                    .DeserializeObject<InfectiousDiseaseMarkerResultRequest>(messageContent),
+                MessageTypes.ReservationRequest => JsonConvert.DeserializeObject<ReservationRequestRequest>(
+                    messageContent),
+                MessageTypes.ReservationResult => JsonConvert.DeserializeObject<ReservationResultRequest>(
+                    messageContent),
+                _ => throw new ArgumentOutOfRangeException(nameof(messageType), messageType,
+                    "Must add MessageType in " + nameof(GetMessageRequest))
+            };
         }
 
         private static async Task<AttachmentTicketResponse> GetAttachmentTicket(string accessToken, string fileName)
@@ -882,20 +947,26 @@ namespace WmdaConnectCLI
 
                         var ackMessage = JsonConvert.DeserializeObject<Ack>(body);
 
-                        if (ackMessage.CorrelationGuid != _pingRequest?.CorrelationGuid && ackMessage.CorrelationGuid != _textMessageRequest?.CorrelationGuid
-                        && ackMessage.CorrelationGuid != _typingRequestRequest?.CorrelationGuid && ackMessage.CorrelationGuid != _typingResponseRequest?.CorrelationGuid
-                        && ackMessage.CorrelationGuid != _sampleRequestRequest?.CorrelationGuid && ackMessage.CorrelationGuid != _sampleArrivalRequest?.CorrelationGuid
-                        && ackMessage.CorrelationGuid != _sampleResponseRequest?.CorrelationGuid && ackMessage.CorrelationGuid != _cbuRequest?.CorrelationGuid)
-                        {
+                        //TODO: sort this out, should be much more generic
+                        var expectedCorrelationGuid = _pingRequest?.CorrelationGuid ??
+                                                      _textMessageRequest?.CorrelationGuid ??
+                                                      _typingRequestRequest?.CorrelationGuid ??
+                                                      _typingResponseRequest?.CorrelationGuid ??
+                                                      _sampleRequestRequest?.CorrelationGuid ??
+                                                      _sampleArrivalRequest?.CorrelationGuid ??
+                                                      _sampleResponseRequest?.CorrelationGuid ??
+                                                      _cbuRequest?.CorrelationGuid ?? 
+                                                      _messageRequest?.CorrelationGuid;
 
-                            Console.WriteLine(_pingRequest?.CorrelationGuid.ToString() ?? _textMessageRequest?.CorrelationGuid.ToString() ?? "NullCorrelationGuid");
+                        if (ackMessage.CorrelationGuid != expectedCorrelationGuid)
+                        {
+                            Console.WriteLine(expectedCorrelationGuid?.ToString() ?? "NullCorrelationGuid");
                             Console.BackgroundColor = ConsoleColor.DarkGray;
                             Console.Write("Stale Message: " + ackMessage.CorrelationGuid);
                             Console.ResetColor();
                             Console.WriteLine();
 
                             break;
-
                         }
 
                         _ackMessage = ackMessage;
