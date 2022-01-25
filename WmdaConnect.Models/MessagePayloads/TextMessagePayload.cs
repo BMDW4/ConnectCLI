@@ -24,6 +24,6 @@ namespace WmdaConnect.Models.MessagePayloads
         /// <summary>
         /// Date sent SENT_DATE Opt 8
         /// </summary>
-        public DateTime SentDate { get; set; }
+        public DateTime? SentDate { get; set; }
     }
 }

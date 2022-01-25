@@ -6,7 +6,7 @@ using WmdaConnect.Models.Shared;
 
 namespace WmdaConnect.Models.MessagePayloads
 {
-    public class TypingRequestPayload : IHasRequestDate, IHasRemark
+    public class TypingRequestPayload : IHasRequestDate, IHasRemark, IHasReferenceCode
     {
         [Required]
         public PatientId Patient { get; set; }
@@ -31,7 +31,7 @@ namespace WmdaConnect.Models.MessagePayloads
         /// </summary>
         [Required]
         [MaxLength(ReferenceCodeField.MaxLength)]
-        public string RefCode { get; set; }
+        public string ReferenceCode { get; set; }
 
         /// <summary>
         /// Resolution required (see below) RESOLUT Req 11

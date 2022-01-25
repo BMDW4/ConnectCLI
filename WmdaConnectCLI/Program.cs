@@ -129,19 +129,18 @@ namespace WmdaConnectCLI
 
         public static async Task RunListenOptions(ListenOptions opts)
         {
-            IConfigurationRoot _configuration;
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))
                 .AddJsonFile($"appsettings.{opts.Environment ?? _connect.Environment}.json", optional: false, reloadOnChange: true);
 
-            _configuration = builder.Build();
+            var configuration = builder.Build();
 
-            var tenantId = _configuration["tenantId"];
+            var tenantId = configuration["tenantId"];
             var clientId = opts.ClientId ?? _connect.ClientId;
             var clientSecret = opts.ClientSecret ?? _connect.ClientSecret;
-            var fullyQualifiedNamespace = _configuration["ServiceBusNamespace"];
-            var azureFunctionAppClientId = _configuration["azureFunctionAppClientId"];
-            _urlRoot = _configuration["urlRoot"];
+            var fullyQualifiedNamespace = configuration["ServiceBusNamespace"];
+            var azureFunctionAppClientId = configuration["azureFunctionAppClientId"];
+            _urlRoot = configuration["urlRoot"];
 
             try
             {
