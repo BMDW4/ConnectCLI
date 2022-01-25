@@ -33,11 +33,11 @@ namespace WmdaConnect.Models.MessagePayloads
         /// <summary>
         /// Date of sample extraction D_EXTR_DATE Opt 8
         /// </summary>
+        [Range(typeof(DateTime), "02-Jan-0001", "31-Dec-9999", ErrorMessage = nameof(SampleExtractionDate) + " expects yyyy-MM-dd [or yyyyMMdd]")]
         public DateTime? SampleExtractionDate { get; set; }
-
-
+        
         /// <summary>
-        /// EMDIS format date of sample extratction D_EXTR_DATE Opt 8 yyyy-MM-dd [or yyyyMMdd]
+        /// EMDIS format date of sample extraction D_EXTR_DATE Opt 8 yyyy-MM-dd [or yyyyMMdd]
         /// </summary>
         public string SampleExtractionDateEmdis => SampleExtractionDate?.ToEmdis();
 

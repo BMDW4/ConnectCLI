@@ -25,7 +25,7 @@ namespace WmdaConnect.Models.MessagePayloads
         /// Proposed date of sample arrival ARRV_DATE Req 8
         /// </summary>
         [Required]
-        [Range(typeof(DateTime), "02-Jan-0001", "31-Dec-9999", ErrorMessage = "Required, yyyy-MM-dd [or yyyyMMdd]")]
+        [Range(typeof(DateTime), "02-Jan-0001", "31-Dec-9999", ErrorMessage = nameof(ArrivalDate) + " expects yyyy-MM-dd [or yyyyMMdd]")]
         public DateTime ArrivalDate { get; set; }
 
         /// <summary>

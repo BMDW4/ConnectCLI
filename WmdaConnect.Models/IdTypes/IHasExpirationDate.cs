@@ -10,7 +10,7 @@ namespace WmdaConnect.Models.IdTypes
         /// Request date EXPI_DATE Req 8 yyyy-MM-dd [or yyyyMMdd]
         /// </summary>
         [Required]
-        [Range(typeof(DateTime), "02-Jan-0001", "31-Dec-9999", ErrorMessage = "Required, yyyy-MM-dd [or yyyyMMdd]")]
+        [Range(typeof(DateTime), "02-Jan-0001", "31-Dec-9999", ErrorMessage = nameof(ExpirationDate) + " expects yyyy-MM-dd [or yyyyMMdd]")]
         public DateTime? ExpirationDate { get; set; }
     }
 }

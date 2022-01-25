@@ -25,7 +25,7 @@ namespace WmdaConnect.Models.MessagePayloads
         /// Request date REQ_DATE Req 8
         /// </summary>
         [Required]
-        [Range(typeof(DateTime), "02-Jan-0001", "31-Dec-9999", ErrorMessage = "Required, yyyy-MM-dd [or yyyyMMdd]")]
+        [Range(typeof(DateTime), "02-Jan-0001", "31-Dec-9999", ErrorMessage = nameof(RequestDate) + " expects yyyy-MM-dd [or yyyyMMdd]")]
         public DateTime RequestDate { get; set; }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace WmdaConnect.Models.MessagePayloads
         /// Earliest date of sample reception REC_DATE1 Req 8 yyyy-MM-dd [or yyyyMMdd]
         /// </summary>
         [Required]
-        [Range(typeof(DateTime), "02-Jan-0001", "31-Dec-9999", ErrorMessage = "Required, yyyy-MM-dd [or yyyyMMdd]")]
+        [Range(typeof(DateTime), "02-Jan-0001", "31-Dec-9999", ErrorMessage = nameof(ReceptionDate1) + " expects yyyy-MM-dd [or yyyyMMdd]")]
         public DateTime ReceptionDate1 { get; set; }
 
         /// <summary>
