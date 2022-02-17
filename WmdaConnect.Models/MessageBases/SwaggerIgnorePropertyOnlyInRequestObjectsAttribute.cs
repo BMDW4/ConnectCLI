@@ -3,7 +3,7 @@
 namespace WmdaConnect.Models.MessageBases
 {
     [AttributeUsage(AttributeTargets.Property)]
-    public class SwaggerIgnorePropertyAttribute : Attribute
+    public class SwaggerIgnorePropertyOnlyInRequestObjectsAttribute : Attribute
     {
     }
 }

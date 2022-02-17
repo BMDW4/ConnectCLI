@@ -6,7 +6,12 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace WmdaConnect.Models.MessageBases
 {
-    public class SwaggerExcludePropertySchemaFilter : ISchemaFilter
+    /// <summary>
+    /// Used to suppress MessageType property when present in *Request objects
+    /// But still show them for IMessage objects that derive from *Request objects
+    /// See #1637 for more details
+    /// </summary>
+    public class SwaggerIgnorePropertyOnlyInRequestObjectsSchemaFilter : ISchemaFilter
     {
         public void Apply(OpenApiSchema schema, SchemaFilterContext context)
         {
@@ -15,20 +20,12 @@ namespace WmdaConnect.Models.MessageBases
                 return;
             }
 
-            if (!context.Type.Name.EndsWith("Request"))
-                return;
-
-            switch (context.Type.Name)
+            if (context.Type.GetInterfaces().Contains(typeof(IMessage)))
             {
-                case "SampleRequest":
-                case "TypingRequest":
-                case "CordBloodUnitReportRequest":
-                case "ReservationRequest":
-                case "InfectiousDiseaseMarkerRequest":
-                    return;
+                return;
             }
 
-            var excludedProperties = context.Type.GetProperties().Where(t => t.GetCustomAttribute<SwaggerIgnorePropertyAttribute>() != null);
+            var excludedProperties = context.Type.GetProperties().Where(t => t.GetCustomAttribute<SwaggerIgnorePropertyOnlyInRequestObjectsAttribute>() != null);
 
             foreach (var excludedProperty in excludedProperties)
             {

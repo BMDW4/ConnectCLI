@@ -35,7 +35,7 @@ namespace WmdaConnect.Models.MessageBases
         /// Message Type
         /// </summary>
         /// <example>[example always set to first element of enum]</example>
-        [SwaggerIgnoreProperty]
+        [SwaggerIgnorePropertyOnlyInRequestObjects]
         public MessageTypes MessageType { get; }
     }
 }
