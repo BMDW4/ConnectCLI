@@ -23,6 +23,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="appsettings.78.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="appsettings.57.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

@@ -15,7 +15,7 @@
         "id": "string"
       }
     },
-    "reqDateUtc": "2021-07-28T14:12:09.343Z",
+    "requestDate": "2021-07-28",
     "prod1": {
       "product": "string",
       "quantity": 0,
@@ -36,11 +36,12 @@
       "quantity": 0,
       "numberOfTubes": 0
     },
-    "recDate1": "2021-07-28T14:12:09.343Z",
-    "recDate2": "2021-07-28T14:12:09.343Z",
+    "receptionDate1": "2021-07-28",
+    "receptionDate2": "20210728",
     "accDays": "string",
-    "instSmpSent": "string",
-    "instPay": "string",
+    "institutionToSendSampleTo": "string",
+    "institutionPaying": "string",
+    "referenceCode": "string",
     "urgent": true,
     "ackId": "string",
     "remark": "string"

@@ -16,9 +16,9 @@
         "sampleType": "string"
       }
     },
-    "refCode": "string",
-    "arrvDate": "2021-07-28T14:12:19.362Z",
-    "collDate": "2021-07-28T14:12:19.362Z",
+    "referenceCode": "string",
+    "arrivalDate": "2021-07-28T14:12:19.362Z",
+    "collectionDate": "2021-07-28T14:12:19.362Z",
     "ackId": "string",
     "labelId": "string",
     "remark": "string"

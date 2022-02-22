@@ -6,7 +6,7 @@ SET clientId=<clientId (Guid)>
 SET clientSecret=<clientSecret (Guid or complex text)>
 SET environment=<environment number (integer value)>
 
-wm listen --clientId %clientId% --clientSecret %clientSecret% --environment %environment%
+wm listen --clientId %clientId% --clientSecret %clientSecret% --env %environment%
 
 @popd
 @pause

@@ -100,7 +100,7 @@
     "antiHbc": "string",
     "antiHcv": "string",
     "tpha": "string",
-    "alt": "string",
+    "alt": 123,
     "antiHtlv": "string",
     "donAccpt": "string"
   }

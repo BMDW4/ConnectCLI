@@ -13,11 +13,12 @@
       },
       "cbu": {
         "id": "string",
-        "sampleType" : "string" 
+        "sampleType": "string"
       }
     },
     "reqDate": "2021-07-28",
-    "refCode": "string",
+    "referenceCode": "string",
+    "HlaNomVer": "123",
     "resolut": "string",
     "instPay": "string",
     "urgent": true,

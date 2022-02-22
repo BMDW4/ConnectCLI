@@ -15,7 +15,7 @@
         "id": "string"
       }
     },
-    "requestDate": "2001-01-02", // 01-01-2001
+    "requestDate": "20010102", // 01-01-2001
     "referenceCode": "string",
     "resolutionRequired": "12345678901", //Max length 11 ; remove 1 character to fail
     "institutionPaying": "1234567890", //Max length 10; remove 1 character to fail

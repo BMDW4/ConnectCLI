@@ -29,13 +29,6 @@ namespace WmdaConnectCLI
         private static Ack _ackMessage;
         private static string _accessToken;
         private static string _urlRoot;
-        private static PingRequest _pingRequest;
-        private static TextMessageRequest _textMessageRequest;
-        private static TypingRequestRequest _typingRequestRequest;
-        private static TypingResponseRequest _typingResponseRequest;
-        private static SampleRequestRequest _sampleRequestRequest;
-        private static SampleArrivalRequest _sampleArrivalRequest;
-        private static SampleResponseRequest _sampleResponseRequest;
         private static CordBloodUnitReportResponse _cbuRequest;
         private static MessageRequest _messageRequest;
         private static ConnectOptions _connect;
@@ -158,13 +151,23 @@ namespace WmdaConnectCLI
 
                 var credential = new ClientSecretCredential(tenantId, clientId, clientSecret);
 
-                await using var client = new ServiceBusClient(fullyQualifiedNamespace, credential);
+                ServiceBusClientOptions serviceBusClientOptions = new()
+                {
+                    RetryOptions = new ServiceBusRetryOptions
+                    {
+                        TryTimeout = TimeSpan.FromSeconds(1)
+                    }
+                };
+                
+                await using var client = new ServiceBusClient(fullyQualifiedNamespace, credential, serviceBusClientOptions);
 
                 var registryDetails = await GetRegistryDetails(_accessToken);
 
                 var queueName = registryDetails.QueueName;
 
-                var processor = client.CreateProcessor(queueName, new ServiceBusProcessorOptions());
+                ServiceBusProcessorOptions serviceBusProcessorOptions = new();//look
+                
+                var processor = client.CreateProcessor(queueName, serviceBusProcessorOptions);
 
                 processor.ProcessMessageAsync += MessageHandler;
 
@@ -175,9 +178,11 @@ namespace WmdaConnectCLI
                 Console.WriteLine("Listening...Press any key to stop listening");
 
                 Console.ReadKey();
+
                 Console.WriteLine("Stopping the receiver...");
 
                 await processor.StopProcessingAsync();
+                await processor.CloseAsync();
 
                 Console.WriteLine("Stopped receiving messages");
             }
@@ -247,8 +252,8 @@ namespace WmdaConnectCLI
 
                 var targetRegistryName = opts.TargetRegistry;
 
-                _pingRequest = new PingRequest { Recipient = targetRegistryName };
-                var pingRequestJson = JsonConvert.SerializeObject(_pingRequest, Formatting.Indented, new StringEnumConverter());
+                _messageRequest = new PingRequest { Recipient = targetRegistryName };
+                var pingRequestJson = JsonConvert.SerializeObject(_messageRequest, Formatting.Indented, new StringEnumConverter());
                 var httpContent = new StringContent(pingRequestJson, Encoding.UTF8, "application/json");
 
                 var url = $"{_urlRoot}/PingRequest";
@@ -551,18 +556,6 @@ namespace WmdaConnectCLI
 
                 switch (messageType)
                 {
-                    case MessageTypes.TextMessage:
-                        {
-                            _textMessageRequest = JsonConvert.DeserializeObject<TextMessageRequest>(messageContent);
-
-                            if (opts.TargetRegistry is not null)
-                                _textMessageRequest.Recipient = opts.TargetRegistry;
-
-                            contentToSend = JsonConvert.SerializeObject(_textMessageRequest);
-
-                            url = $"{_urlRoot}/TextMessageRequest";
-                            break;
-                        }
                     case MessageTypes.CordBloodUnitReportResponse:
                         {
                             _cbuRequest = JsonConvert.DeserializeObject<CordBloodUnitReportResponse>(messageContent);
@@ -590,80 +583,13 @@ namespace WmdaConnectCLI
 
                             break;
                         }
-                    case MessageTypes.TypingRequest:
-                        {
-                            _typingRequestRequest = JsonConvert.DeserializeObject<TypingRequestRequest>(messageContent, new MultiFormatDateConverter());
-
-
-                            if (opts.TargetRegistry is not null)
-                                _typingRequestRequest.Recipient = opts.TargetRegistry;
-
-                            contentToSend = JsonConvert.SerializeObject(_typingRequestRequest);
-
-                            url = $"{_urlRoot}/TypingRequestRequest";
-                            break;
-                        }
-                    case MessageTypes.TypingResponse:
-                        {
-                            _typingResponseRequest = JsonConvert.DeserializeObject<TypingResponseRequest>(messageContent);
-
-                            if (opts.TargetRegistry is not null)
-                                _typingResponseRequest.Recipient = opts.TargetRegistry;
-
-                            contentToSend = JsonConvert.SerializeObject(_typingResponseRequest);
-
-                            url = $"{_urlRoot}/TypingResponseRequest";
-                            break;
-                        }
                     case MessageTypes.SampleRequest:
-                        {
-                            _sampleRequestRequest = JsonConvert.DeserializeObject<SampleRequestRequest>(messageContent);
-
-                            if (opts.TargetRegistry is not null)
-                                _sampleRequestRequest.Recipient = opts.TargetRegistry;
-
-                            contentToSend = JsonConvert.SerializeObject(_sampleRequestRequest);
-
-
-                            url = $"{_urlRoot}/SampleRequestRequest";
-                            break;
-                        }
                     case MessageTypes.SampleArrival:
-                        {
-                            _sampleArrivalRequest = JsonConvert.DeserializeObject<SampleArrivalRequest>(messageContent);
-
-                            if (opts.TargetRegistry is not null)
-                                _sampleArrivalRequest.Recipient = opts.TargetRegistry;
-
-                            contentToSend = JsonConvert.SerializeObject(_sampleArrivalRequest);
-
-                            url = $"{_urlRoot}/SampleArrivalRequest";
-                            break;
-                        }
                     case MessageTypes.SampleInfo:
-                        {
-                            var sampleInfoRequest = JsonConvert.DeserializeObject<SampleInfoRequest>(messageContent);
-
-                            if (opts.TargetRegistry is not null)
-                                sampleInfoRequest.Recipient = opts.TargetRegistry;
-
-                            contentToSend = JsonConvert.SerializeObject(sampleInfoRequest);
-
-                            url = $"{_urlRoot}/SampleInfoRequest";
-                            break;
-                        }
                     case MessageTypes.SampleResponse:
-                        {
-                            _sampleResponseRequest = JsonConvert.DeserializeObject<SampleResponseRequest>(messageContent);
-
-                            if (opts.TargetRegistry is not null)
-                                _sampleResponseRequest.Recipient = opts.TargetRegistry;
-
-                            contentToSend = JsonConvert.SerializeObject(_sampleResponseRequest);
-
-                            url = $"{_urlRoot}/SampleResponseRequest";
-                            break;
-                        }
+                    case MessageTypes.TextMessage:
+                    case MessageTypes.TypingRequest:
+                    case MessageTypes.TypingResponse:
                     case MessageTypes.Warning:
                     case MessageTypes.RequestCancellation:
                     case MessageTypes.NoResult:
@@ -762,35 +688,35 @@ namespace WmdaConnectCLI
         {
             return messageType switch
             {
-                MessageTypes.Ping => JsonConvert.DeserializeObject<PingRequest>(messageContent),
-                MessageTypes.Ack => JsonConvert.DeserializeObject<AckRequest>(messageContent),
-                MessageTypes.TypingRequest => JsonConvert.DeserializeObject<TypingRequestRequest>(messageContent),
-                MessageTypes.TypingResponse => JsonConvert.DeserializeObject<TypingResponseRequest>(messageContent),
-                MessageTypes.SampleRequest => JsonConvert.DeserializeObject<SampleRequestRequest>(messageContent),
-                MessageTypes.SampleArrival => JsonConvert.DeserializeObject<SampleArrivalRequest>(messageContent),
-                MessageTypes.SampleResponse => JsonConvert.DeserializeObject<SampleResponseRequest>(messageContent),
-                MessageTypes.SampleInfo => JsonConvert.DeserializeObject<SampleInfoRequest>(messageContent),
-                MessageTypes.TextMessage => JsonConvert.DeserializeObject<TextMessageRequest>(messageContent),
-                MessageTypes.Warning => JsonConvert.DeserializeObject<WarningRequest>(messageContent),
+                MessageTypes.Ping => JsonConvert.DeserializeObject<PingRequest>(messageContent, new MultiFormatDateConverter()),
+                MessageTypes.Ack => JsonConvert.DeserializeObject<AckRequest>(messageContent, new MultiFormatDateConverter()),
+                MessageTypes.TypingRequest => JsonConvert.DeserializeObject<TypingRequestRequest>(messageContent, new MultiFormatDateConverter()),
+                MessageTypes.TypingResponse => JsonConvert.DeserializeObject<TypingResponseRequest>(messageContent, new MultiFormatDateConverter()),
+                MessageTypes.SampleRequest => JsonConvert.DeserializeObject<SampleRequestRequest>(messageContent, new MultiFormatDateConverter()),
+                MessageTypes.SampleArrival => JsonConvert.DeserializeObject<SampleArrivalRequest>(messageContent, new MultiFormatDateConverter()),
+                MessageTypes.SampleResponse => JsonConvert.DeserializeObject<SampleResponseRequest>(messageContent, new MultiFormatDateConverter()),
+                MessageTypes.SampleInfo => JsonConvert.DeserializeObject<SampleInfoRequest>(messageContent, new MultiFormatDateConverter()),
+                MessageTypes.TextMessage => JsonConvert.DeserializeObject<TextMessageRequest>(messageContent, new MultiFormatDateConverter()),
+                MessageTypes.Warning => JsonConvert.DeserializeObject<WarningRequest>(messageContent, new MultiFormatDateConverter()),
                 MessageTypes.RequestCancellation => JsonConvert.DeserializeObject<RequestCancellationRequest>(
-                    messageContent),
-                MessageTypes.NoResult => JsonConvert.DeserializeObject<NoResultRequest>(messageContent),
+                    messageContent, new MultiFormatDateConverter()),
+                MessageTypes.NoResult => JsonConvert.DeserializeObject<NoResultRequest>(messageContent, new MultiFormatDateConverter()),
                 MessageTypes.MessageAcknowledgement => JsonConvert.DeserializeObject<MessageAcknowledgementRequest>(
-                    messageContent),
-                MessageTypes.MessageDenial => JsonConvert.DeserializeObject<MessageDenialRequest>(messageContent),
-                MessageTypes.ResultReminder => JsonConvert.DeserializeObject<ResultReminderRequest>(messageContent),
+                    messageContent, new MultiFormatDateConverter()),
+                MessageTypes.MessageDenial => JsonConvert.DeserializeObject<MessageDenialRequest>(messageContent, new MultiFormatDateConverter()),
+                MessageTypes.ResultReminder => JsonConvert.DeserializeObject<ResultReminderRequest>(messageContent, new MultiFormatDateConverter()),
                 MessageTypes.CordBloodUnitReportRequest => JsonConvert
-                    .DeserializeObject<CordBloodUnitReportRequestRequest>(messageContent),
+                    .DeserializeObject<CordBloodUnitReportRequestRequest>(messageContent, new MultiFormatDateConverter()),
                 MessageTypes.CordBloodUnitReportResponse => JsonConvert
-                    .DeserializeObject<CordBloodUnitReportResponseRequest>(messageContent),
+                    .DeserializeObject<CordBloodUnitReportResponseRequest>(messageContent, new MultiFormatDateConverter()),
                 MessageTypes.InfectiousDiseaseMarkerRequest => JsonConvert
-                    .DeserializeObject<InfectiousDiseaseMarkerRequestRequest>(messageContent),
+                    .DeserializeObject<InfectiousDiseaseMarkerRequestRequest>(messageContent, new MultiFormatDateConverter()),
                 MessageTypes.InfectiousDiseaseMarkerResult => JsonConvert
-                    .DeserializeObject<InfectiousDiseaseMarkerResultRequest>(messageContent),
+                    .DeserializeObject<InfectiousDiseaseMarkerResultRequest>(messageContent, new MultiFormatDateConverter()),
                 MessageTypes.ReservationRequest => JsonConvert.DeserializeObject<ReservationRequestRequest>(
-                    messageContent),
+                    messageContent, new MultiFormatDateConverter()),
                 MessageTypes.ReservationResult => JsonConvert.DeserializeObject<ReservationResultRequest>(
-                    messageContent),
+                    messageContent, new MultiFormatDateConverter()),
                 _ => throw new ArgumentOutOfRangeException(nameof(messageType), messageType,
                     "Must add MessageType in " + nameof(GetMessageRequest))
             };
@@ -946,15 +872,7 @@ namespace WmdaConnectCLI
 
                         var ackMessage = JsonConvert.DeserializeObject<Ack>(body);
 
-                        //TODO: sort this out, should be much more generic
-                        var expectedCorrelationGuid = _pingRequest?.CorrelationGuid ??
-                                                      _textMessageRequest?.CorrelationGuid ??
-                                                      _typingRequestRequest?.CorrelationGuid ??
-                                                      _typingResponseRequest?.CorrelationGuid ??
-                                                      _sampleRequestRequest?.CorrelationGuid ??
-                                                      _sampleArrivalRequest?.CorrelationGuid ??
-                                                      _sampleResponseRequest?.CorrelationGuid ??
-                                                      _cbuRequest?.CorrelationGuid ?? 
+                        var expectedCorrelationGuid = _cbuRequest?.CorrelationGuid ?? 
                                                       _messageRequest?.CorrelationGuid;
 
                         if (ackMessage.CorrelationGuid != expectedCorrelationGuid)
@@ -1016,6 +934,12 @@ namespace WmdaConnectCLI
                         var response = await httpClient.SendAsync(req);
 
                         response.EnsureSuccessCodeReportBody();
+
+                        Console.BackgroundColor = ConsoleColor.Blue; 
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.Write($"Acknowledgement Sent:\n{myContent}");
+                        Console.ResetColor();
+                        Console.WriteLine();
                     }
                     catch (Exception e)
                     {
