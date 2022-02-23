@@ -102,6 +102,7 @@
     "tpha": "string",
     "alt": 123,
     "antiHtlv": "string",
-    "donAccpt": "string"
+    "donAccpt": "x",
+    "referenceCode" :  "string" 
   }
 }
