@@ -165,7 +165,7 @@ namespace WmdaConnectCLI
 
                 var queueName = registryDetails.QueueName;
 
-                ServiceBusProcessorOptions serviceBusProcessorOptions = new();//look
+                ServiceBusProcessorOptions serviceBusProcessorOptions = new();
                 
                 var processor = client.CreateProcessor(queueName, serviceBusProcessorOptions);
 
