@@ -60,24 +60,23 @@ namespace WmdaConnectCLI
 
         /* ----------------------------------------------------------------------------------------------------------- */
         /* ----------------------------------------------------------------------------------------------------------- */
-        /* -----------------------------------------LISTEN FUNCTIONALITY---------------------------------------------- */
+        /* -----------------------------------------CONNECT FUNCTIONALITY---------------------------------------------- */
         /* ----------------------------------------------------------------------------------------------------------- */
         /* ----------------------------------------------------------------------------------------------------------- */
 
         public static async Task ConnectRegistry(ConnectOptions opts)
         {
-            IConfigurationRoot _configuration;
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))
                 .AddJsonFile($"appsettings.{opts.Environment}.json", optional: false, reloadOnChange: true);
 
-            _configuration = builder.Build();
+            var configuration = builder.Build();
 
-            var tenantId = _configuration["tenantId"];
+            var tenantId = configuration["tenantId"];
             var clientId = opts.ClientId;
             var clientSecret = opts.ClientSecret;
-            var azureFunctionAppClientId = _configuration["azureFunctionAppClientId"];
-            _urlRoot = _configuration["urlRoot"];
+            var azureFunctionAppClientId = configuration["azureFunctionAppClientId"];
+            _urlRoot = configuration["urlRoot"];
 
             try
             {
